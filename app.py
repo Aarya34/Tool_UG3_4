@@ -195,17 +195,35 @@ def analyze_python_code(code: str):
         issues["shotgun_surgery"] = frequent_changes
     
     return issues
+
+    too_many_arguments = [
+        node.name for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef) and len(node.args.args) > 5
+    ]
+    if too_many_arguments:
+        issues["too_many_arguments"] = too_many_arguments
+
+    return issues
     
 
 def analyze_js_code(file_path):
     smells = []
     function_details = []
+    global_variables = []
     
     with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
         code = f.read()
 
     lines = code.splitlines()
     num_lines = len(lines)
+    var_decls = re.findall(r'(?:var|let|const)\s+(\w+)', code)
+    for var in var_decls:
+        # Check if the variable is declared in the global scope (not inside any function)
+        if not re.search(rf'function\s+\w+\s*\(.*\)\s*{{.*\b{var}\b.*}}', code):
+            global_variables.append(var)
+    
+    if global_variables:
+        smells.append(f"Global Variables Found: {len(global_variables)} variables")
 
     # --- Long Function & Too Many Parameters ---
     function_defs = re.finditer(r'function\s+(\w+)?\s*\(([^)]*)\)\s*{', code)
