@@ -98,9 +98,52 @@ def analyze_python_code(code: str):
     ]
     if deep_nested_functions:
         issues["deeply_nested_functions"] = deep_nested_functions
+        
+    long_lambdas = [
+        node.lineno for node in ast.walk(tree)
+        if isinstance(node, ast.Lambda) and len(node.body.elts) > 3
+    ]
+    if long_lambdas:
+        issues["long_lambdas"] = long_lambdas
 
+    useless_exceptions = [
+        node.lineno for node in ast.walk(tree)
+        if isinstance(node, ast.Try) and any(
+            isinstance(handler.body[0], ast.Pass) if handler.body else True for handler in node.handlers
+        )
+    ]
+    if useless_exceptions:
+        issues["useless_exceptions"] = useless_exceptions
+     
+    function_bodies = defaultdict(list)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef):
+            body_str = "".join(ast.dump(stmt) for stmt in node.body)
+            function_bodies[body_str].append(node.name)
+    duplicates = [funcs for funcs in function_bodies.values() if len(funcs) > 1]
+    if duplicates:
+        issues["duplicate_code"] = duplicates
+
+    comment_lines = sum(1 for line in code.split("\n") if line.strip().startswith("#"))
+    total_lines = len(code.split("\n"))
+    if total_lines > 0 and (comment_lines / total_lines) > 0.3:
+        issues["excessive_comments"] = f"{(comment_lines / total_lines) * 100:.2f}% comments"
+
+    large_classes = [
+        node.name for node in ast.walk(tree)
+        if isinstance(node, ast.ClassDef) and sum(isinstance(n, ast.FunctionDef) for n in node.body) > 10
+    ]
+    if large_classes:
+        issues["large_classes"] = large_classes
+    
     def count_return_statements(node):
         return sum(1 for n in ast.walk(node) if isinstance(n, ast.Return))
+    many_return_functions = [
+        node.name for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef) and count_return_statements(node) > 3
+    ]
+    if many_return_functions:
+        issues["too_many_returns"] = many_return_functions
 
     large_functions = [
         node.name for node in ast.walk(tree) 
