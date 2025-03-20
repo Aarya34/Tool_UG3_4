@@ -68,6 +68,21 @@ def analyze_repo(repo_url):
 
 def analyze_python_code(code: str):
     issues = {}
+    complexity_results = cc_visit(code)
+    high_complexity = [func.name for func in complexity_results if func.complexity > 10]
+    if high_complexity:
+        issues["high_complexity_functions"] = high_complexity
+    
+    halstead_metrics = h_visit(code)
+    maintainability_index = mi_visit(code, halstead_metrics)
+    if maintainability_index < 20:
+        issues["low_maintainability"] = maintainability_index
+    
+    raw_metrics = analyze(code)
+    if raw_metrics.loc > 500:
+        issues["large_file"] = raw_metrics.loc
+    
+    return issues
     
 
 def analyze_js_code(file_path):
