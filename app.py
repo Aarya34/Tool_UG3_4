@@ -293,6 +293,25 @@ def analyze_js_code(file_path):
     if unused_vars:
         smells.append(f"Unused Variables: {len(unused_vars)} variables")
 
+    # --- Long Chained Calls ---
+    long_chains = re.findall(r'\w+\.(?:\w+\.){3,}', code)  # More than 3 chained calls
+    if long_chains:
+        smells.append(f"Long Chained Calls Found: {len(long_chains)} chains")
+
+    # --- Inconsistent Naming ---
+    camel_case_vars = re.findall(r'\b[a-z][a-zA-Z0-9]*\b', code)
+    snake_case_vars = re.findall(r'\b[a-z0-9]+(?:_[a-z0-9]+)+\b', code)
+    
+    inconsistent_names = [name for name in camel_case_vars if name in snake_case_vars]
+    if inconsistent_names:
+        smells.append(f"Inconsistent Naming Found: {len(inconsistent_names)} inconsistencies")
+
+    # --- Callback Hell (Nested callbacks) ---
+    callback_patterns = re.findall(r'\(\s*function\s*\(.*\)\s*\{', code)
+    nested_callbacks = [callback for callback in callback_patterns if callback.count('{') > 3]
+    if nested_callbacks:
+        smells.append(f"Callback Hell Detected: {len(nested_callbacks)} deeply nested callbacks")
+
     return list(set(smells)), {
         'total_lines': num_lines,
         'num_console_logs': len(console_logs),
