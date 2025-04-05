@@ -10,8 +10,12 @@ from radon.complexity import cc_visit
 from radon.metrics import h_visit, mi_visit
 from radon.raw import analyze
 import ast
+import json
+import os
+import stat
 
 REPO_DIR = "temp_repo"
+
 
 def clone_github_repo(repo_url):
     temp_dir = tempfile.mkdtemp()
@@ -27,7 +31,7 @@ def clone_github_repo(repo_url):
 def analyze_repo(repo_url):
     repo_path = clone_github_repo(repo_url)
     if not repo_path:
-        return
+        raise ValueError(f"Failed to clone repository: {repo_url}")
 
     python_files = list(Path(repo_path).rglob("*.py"))
     js_files = list(Path(repo_path).rglob("*.js"))
@@ -41,14 +45,34 @@ def analyze_repo(repo_url):
             code = f.read()
             report[file.name] = analyze_python_code(code)
     
-    smell_report = defaultdict(list)
+    smell_report = {}
     for file in js_files:
         smells, details = analyze_js_code(file)
-        if smells:
-            smell_report[file] = (smells, details)
+        smell_report[file.name] = (smells, details) 
+    shutil.rmtree(repo_path, onerror=lambda _, path, __: os.chmod(path, stat.S_IWRITE))
     
-    shutil.rmtree(repo_path)
+    # Combine Python and JavaScript smells into a single report
+    combined_report = {
+        "python": report,
+        "javascript": smell_report
+    }
     
+    # Write the combined report to a JSON file
+    output_file = "code_smells_report.json"
+    with open(output_file, "w", encoding="utf-8") as json_file:
+        json.dump(combined_report, json_file, indent=4)
+    
+    print(f"\n[+] Code smells report saved to {output_file}")
+    return {
+            "python": report,
+            "javascript": smell_report,
+            "metadata": {
+                "python_files": len(python_files),
+                "js_files": len(js_files),
+                "repo": repo_url
+            }
+    }
+
     print("\nCode Smells Report (Python):")
     for filename, issues in report.items():
         print(f"\nFile: {filename}")
@@ -299,7 +323,7 @@ def analyze_js_code(file_path):
         smells.append(f"Long Chained Calls Found: {len(long_chains)} chains")
 
     # --- Inconsistent Naming ---
-    camel_case_vars = re.findall(r'\b[a-z][a-zA-Z0-9]*\b', code)
+    camel_case_vars = re.findall(r'\b[a-z][a-zA-Z0-9]*\b', code) 
     snake_case_vars = re.findall(r'\b[a-z0-9]+(?:_[a-z0-9]+)+\b', code)
     
     inconsistent_names = [name for name in camel_case_vars if name in snake_case_vars]
