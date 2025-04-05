@@ -125,9 +125,10 @@ def analyze_python_code(code: str):
         issues["deeply_nested_functions"] = deep_nested_functions
         
     long_lambdas = [
-        node.lineno for node in ast.walk(tree)
-        if isinstance(node, ast.Lambda) and len(node.body.elts) > 3
-    ]
+    node.lineno for node in ast.walk(tree)
+    if isinstance(node, ast.Lambda) and isinstance(node.body, (ast.List, ast.Tuple)) and len(node.body.elts) > 3
+]
+
     if long_lambdas:
         issues["long_lambdas"] = long_lambdas
 

@@ -1,4 +1,11 @@
 (async () => {
+
+    const pathParts = window.location.pathname.split('/');
+
+    if (pathParts.length < 3 || !pathParts[1] || !pathParts[2]) {
+        console.log("[EXTENSION] Not a repository page. Skipping analysis.");
+        return;
+    }
     const repoPath = window.location.pathname.split('/').slice(1, 3).join('/');
     const repoUrl = `https://github.com/${repoPath}`;
     console.log("[EXTENSION] Analyzing repository:", repoUrl);
@@ -153,6 +160,6 @@
 
     } catch (err) {
         console.error("[EXTENSION] Error:", err);
-        alert(`Error: ${err.message}`);
+        // alert(`Error: ${err.message}`);
     }
 })();

@@ -1,261 +1,185 @@
 {
-    "python": {
-        "app.py": {
-            "high_complexity_functions": [
-                "excelColnoToColNo"
-            ],
-            "deeply_nested_functions": [
-                "refactor_special_missing_values_endpoint",
-                "refactor_missing_values_endpoint",
-                "excelColnoToColNo"
-            ],
-            "too_many_returns": [
-                "excelColnoToColNo"
-            ],
-            "feature_envy": [
-                "regularExp"
-            ],
-            "data_clumps": [
-                []
-            ],
-            "shotgun_surgery": [
-                "len",
-                "jsonify"
-            ]
-        },
-        "correlated.py": {
-            "deeply_nested_functions": [
-                "correlated"
-            ],
-            "feature_envy": [
-                "generate_heatmap",
-                "correlated"
-            ],
-            "data_clumps": [
-                [
-                    "df"
-                ]
-            ]
-        },
-        "duplicates.py": {
-            "feature_envy": [
-                "duplicated"
-            ]
-        },
-        "imbalance.py": {
-            "high_complexity_functions": [
-                "generate_bargraph_class_imbal"
-            ],
-            "deeply_nested_functions": [
-                "binning_cat",
-                "refactor_binning_cat",
-                "class_imbal"
-            ],
-            "feature_envy": [
-                "class_imbal",
-                "refactor_class_imbal",
-                "generate_bargraph_class_imbal",
-                "generate_bargraph_binning_cat"
-            ],
-            "data_clumps": [
-                [
-                    "df"
-                ],
-                [
-                    "df",
-                    "threshold"
-                ]
-            ],
-            "shotgun_surgery": [
-                "len"
-            ]
-        },
-        "outliers.py": {
-            "deeply_nested_functions": [
-                "Outliers"
-            ],
-            "excessive_comments": "40.37% comments",
-            "feature_envy": [
-                "generate_boxplot"
-            ],
-            "data_clumps": [
-                [
-                    "df"
-                ]
-            ]
-        },
-        "sp_missingvalues.py": {
-            "high_complexity_functions": [
-                "SpecialMissingValues"
-            ],
-            "deeply_nested_functions": [
-                "SpecialMissingValues",
-                "missing_values"
-            ],
-            "feature_envy": [
-                "generate_bargraph_special_missing_values",
-                "generate_bargraph_nan_values",
-                "SpecialMissingValues",
-                "missing_values"
-            ],
-            "data_clumps": [
-                [
-                    "df"
-                ]
-            ]
-        },
-        "stringsmells.py": {
-            "deeply_nested_functions": [
-                "detect_binary_missing_values",
-                "detect_integer_as_string",
-                "detect_special_characters",
-                "refactor_special_char",
-                "refactor_integer_as_string",
-                "trailing_spaces",
-                "human_friendly",
-                "refactor_human_friendly"
-            ],
-            "too_many_returns": [
-                "detect_integer_as_string",
-                "refactor_integer_as_string"
-            ],
-            "feature_envy": [
-                "generate_bargraph_special_characters",
-                "generate_bargraph_trailing_spaces",
-                "generate_bargraph_human_friendly"
-            ],
-            "data_clumps": [
-                [
-                    "df"
-                ],
-                [
-                    "cell"
-                ]
-            ],
-            "shotgun_surgery": [
-                "len"
-            ]
-        },
-        "ui.py": {
-            "excessive_comments": "100.00% comments"
-        }
-    },
+    "python": {},
     "javascript": {
-        "App.js": [
+        "server.js": [
             [
-                "Magic Numbers Found: 3 occurrences"
+                "Magic Numbers Found: 3 occurrences",
+                "Global Variables Found: 9 variables"
             ],
             {
-                "total_lines": 25,
-                "num_console_logs": 0,
-                "num_functions": 1,
-                "function_lengths": [
-                    9
-                ],
-                "max_nesting_level": 1
-            }
-        ],
-        "App.test.js": [
-            [
-                "Global Variables Found: 1 variables"
-            ],
-            {
-                "total_lines": 8,
-                "num_console_logs": 0,
-                "num_functions": 0,
-                "function_lengths": [],
-                "max_nesting_level": 1
-            }
-        ],
-        "index.js": [
-            [
-                "Global Variables Found: 1 variables"
-            ],
-            {
-                "total_lines": 17,
+                "total_lines": 28,
                 "num_console_logs": 1,
                 "num_functions": 0,
                 "function_lengths": [],
                 "max_nesting_level": 0
             }
         ],
-        "reportWebVitals.js": [
+        "babel.config.js": [
+            [],
+            {
+                "total_lines": 7,
+                "num_console_logs": 0,
+                "num_functions": 1,
+                "function_lengths": [
+                    7
+                ],
+                "max_nesting_level": 2
+            }
+        ],
+        "tailwind.config.js": [
             [
-                "Global Variables Found: 1 variables"
+                "Deep Nesting (>=4 levels): 5 levels",
+                "Magic Numbers Found: 2 occurrences"
             ],
             {
-                "total_lines": 13,
+                "total_lines": 22,
                 "num_console_logs": 0,
                 "num_functions": 0,
                 "function_lengths": [],
-                "max_nesting_level": 3
+                "max_nesting_level": 5
             }
         ],
-        "setupTests.js": [
-            [],
+        "config.js": [
+            [
+                "Magic Numbers Found: 1 occurrences",
+                "Global Variables Found: 1 variables",
+                "Unused Variables: 1 variables"
+            ],
             {
-                "total_lines": 5,
+                "total_lines": 1,
                 "num_console_logs": 0,
                 "num_functions": 0,
                 "function_lengths": [],
                 "max_nesting_level": 0
             }
         ],
-        "Codebox.js": [
+        "db.js": [
             [
-                "Duplicate Code Blocks: 1 blocks repeated",
                 "Magic Numbers Found: 1 occurrences",
-                "Global Variables Found: 4 variables"
+                "Global Variables Found: 3 variables"
             ],
             {
-                "total_lines": 92,
-                "num_console_logs": 0,
+                "total_lines": 16,
+                "num_console_logs": 1,
                 "num_functions": 0,
                 "function_lengths": [],
                 "max_nesting_level": 3
             }
         ],
-        "data.js": [
+        "Item.js": [
             [
-                "Magic Numbers Found: 134 occurrences"
+                "Global Variables Found: 2 variables"
             ],
             {
-                "total_lines": 235,
+                "total_lines": 12,
                 "num_console_logs": 0,
                 "num_functions": 0,
                 "function_lengths": [],
                 "max_nesting_level": 1
             }
         ],
-        "Excel.js": [
+        "Lost_item.js": [
             [
-                "Magic Numbers Found: 8 occurrences"
+                "Global Variables Found: 2 variables"
             ],
             {
-                "total_lines": 50,
+                "total_lines": 12,
                 "num_console_logs": 0,
-                "num_functions": 1,
-                "function_lengths": [
-                    28
-                ],
+                "num_functions": 0,
+                "function_lengths": [],
                 "max_nesting_level": 1
             }
         ],
-        "form.js": [
+        "User.js": [
             [
+                "Global Variables Found: 3 variables"
+            ],
+            {
+                "total_lines": 11,
+                "num_console_logs": 0,
+                "num_functions": 0,
+                "function_lengths": [],
+                "max_nesting_level": 1
+            }
+        ],
+        "auth.js": [
+            [
+                "Magic Numbers Found: 16 occurrences",
                 "Duplicate Code Blocks: 2 blocks repeated",
-                "Magic Numbers Found: 3 occurrences",
-                "Global Variables Found: 6 variables",
-                "Unused Variables: 2 variables"
+                "Global Variables Found: 9 variables"
             ],
             {
-                "total_lines": 90,
-                "num_console_logs": 2,
-                "num_functions": 1,
-                "function_lengths": [
-                    4
-                ],
+                "total_lines": 77,
+                "num_console_logs": 6,
+                "num_functions": 0,
+                "function_lengths": [],
                 "max_nesting_level": 3
+            }
+        ],
+        "items.js": [
+            [
+                "Global Variables Found: 5 variables",
+                "Magic Numbers Found: 4 occurrences"
+            ],
+            {
+                "total_lines": 27,
+                "num_console_logs": 1,
+                "num_functions": 0,
+                "function_lengths": [],
+                "max_nesting_level": 2
+            }
+        ],
+        "lost_items.js": [
+            [
+                "Global Variables Found: 5 variables",
+                "Magic Numbers Found: 4 occurrences"
+            ],
+            {
+                "total_lines": 27,
+                "num_console_logs": 1,
+                "num_functions": 0,
+                "function_lengths": [],
+                "max_nesting_level": 2
+            }
+        ],
+        "sizes.js": [
+            [
+                "Duplicate Code Blocks: 5 blocks repeated",
+                "Global Variables Found: 15 variables",
+                "Magic Numbers Found: 3 occurrences"
+            ],
+            {
+                "total_lines": 47,
+                "num_console_logs": 0,
+                "num_functions": 0,
+                "function_lengths": [],
+                "max_nesting_level": 2
+            }
+        ],
+        "useTabVisibility.js": [
+            [
+                "Unused Variables: 1 variables",
+                "Global Variables Found: 3 variables"
+            ],
+            {
+                "total_lines": 18,
+                "num_console_logs": 0,
+                "num_functions": 0,
+                "function_lengths": [],
+                "max_nesting_level": 1
+            }
+        ],
+        "circles.js": [
+            [
+                "Magic Numbers Found: 10 occurrences",
+                "Global Variables Found: 2 variables"
+            ],
+            {
+                "total_lines": 43,
+                "num_console_logs": 0,
+                "num_functions": 0,
+                "function_lengths": [],
+                "max_nesting_level": 2
             }
         ]
     }
