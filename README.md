@@ -115,9 +115,9 @@ Our project aims to improve code quality in open-source repositories by detectin
 
 ## Contributions
 
-- **Akshatha RH** (CS22B003) - 
-- **A Sai Preethika** (CS22B006) - 
-- **Ch Aarya** (CS22B018) - 
-- **K Sanjay Varshith** (CS22B029) - 
-- **K Akhil Solomon** (CS22B032) - 
-- **M Akash** (CS22B037) - 
+- **Akshatha RH** (CS22B003) - (for js)  Duplicate Code, Too Many Parameters, Unused Variables smells, Low Comment Density, Empty Catch Blocks, Global variables  
+- **A Sai Preethika** (CS22B006) - (for py) Long lambdas, Useless exceptions ,Duplicate code ,Large classes, Too many returns, Display of smell info on icon click
+- **Ch Aarya** (CS22B018) - (for py) High complexity functions, Low maintainability, Large file, Globalvariables, Large parameters smells, Integrated code to chrome extension
+- **K Sanjay Varshith** (CS22B029) - (for py)  Deeply nested functions, Large functions, Feature envy, Data clumps, Dead code variables, Display of info icon beside smelly files  
+- **K Akhil Solomon** (CS22B032) - Callback Hell, Long Chained Calls , Inconsistent Naming smell, Shotgun surgery smell, Unnecessary Semicolons smell,  Useless exceptions smell
+- **M Akash** (CS22B037) -  Long Function smell, Large File smell, Console Log Overuse smell, Deep Nesting smell, Magic Numbers smell, Dead code variables smell
