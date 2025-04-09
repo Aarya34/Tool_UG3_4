@@ -235,18 +235,18 @@ def analyze_js_code(file_path):
     smells = []
     function_details = []
     global_variables = []
-    
+
     with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
         code = f.read()
 
     lines = code.splitlines()
     num_lines = len(lines)
+
+    # --- Global Variables ---
     var_decls = re.findall(r'(?:var|let|const)\s+(\w+)', code)
     for var in var_decls:
-        # Check if the variable is declared in the global scope (not inside any function)
         if not re.search(rf'function\s+\w+\s*\(.*\)\s*{{.*\b{var}\b.*}}', code):
             global_variables.append(var)
-    
     if global_variables:
         smells.append(f"Global Variables Found: {len(global_variables)} variables")
 
@@ -296,7 +296,7 @@ def analyze_js_code(file_path):
     # --- Magic Numbers ---
     magic_numbers = re.findall(r'[^a-zA-Z](\d+)[^a-zA-Z]', code)
     magic_numbers = [num for num in magic_numbers if num not in ['0', '1']]
-    if len(magic_numbers) > 0:
+    if magic_numbers:
         smells.append(f"Magic Numbers Found: {len(magic_numbers)} occurrences")
 
     # --- Duplicate Code Blocks (3+ lines repeated) ---
@@ -310,7 +310,6 @@ def analyze_js_code(file_path):
         smells.append(f"Duplicate Code Blocks: {len(duplicate_blocks)} blocks repeated")
 
     # --- Unused Variables ---
-    var_decls = re.findall(r'(?:var|let|const)\s+(\w+)', code)
     unused_vars = []
     for var in var_decls:
         if len(re.findall(r'\b' + re.escape(var) + r'\b', code)) == 1:
@@ -319,23 +318,38 @@ def analyze_js_code(file_path):
         smells.append(f"Unused Variables: {len(unused_vars)} variables")
 
     # --- Long Chained Calls ---
-    long_chains = re.findall(r'\w+\.(?:\w+\.){3,}', code)  # More than 3 chained calls
+    long_chains = re.findall(r'\w+\.(?:\w+\.){3,}', code)
     if long_chains:
         smells.append(f"Long Chained Calls Found: {len(long_chains)} chains")
 
     # --- Inconsistent Naming ---
-    camel_case_vars = re.findall(r'\b[a-z][a-zA-Z0-9]*\b', code) 
+    camel_case_vars = re.findall(r'\b[a-z][a-zA-Z0-9]*\b', code)
     snake_case_vars = re.findall(r'\b[a-z0-9]+(?:_[a-z0-9]+)+\b', code)
-    
     inconsistent_names = [name for name in camel_case_vars if name in snake_case_vars]
     if inconsistent_names:
         smells.append(f"Inconsistent Naming Found: {len(inconsistent_names)} inconsistencies")
 
-    # --- Callback Hell (Nested callbacks) ---
+    # --- Callback Hell (Deeply Nested Callbacks) ---
     callback_patterns = re.findall(r'\(\s*function\s*\(.*\)\s*\{', code)
     nested_callbacks = [callback for callback in callback_patterns if callback.count('{') > 3]
     if nested_callbacks:
         smells.append(f"Callback Hell Detected: {len(nested_callbacks)} deeply nested callbacks")
+
+    # --- Low Comment Density ---
+    comments = [line for line in lines if line.strip().startswith('//') or line.strip().startswith('/*')]
+    comment_ratio = len(comments) / num_lines if num_lines else 0
+    if comment_ratio < 0.02:
+        smells.append(f"Low Comment Density (<2%): {len(comments)} comments")
+
+    # --- Empty Catch Blocks ---
+    empty_catches = re.findall(r'catch\s*\(.*\)\s*\{\s*\}', code)
+    if empty_catches:
+        smells.append(f"Empty Catch Blocks Found: {len(empty_catches)} blocks")
+
+    # --- Unnecessary Semicolons ---
+    unnecessary_semis = [line for line in lines if line.strip() == ';']
+    if unnecessary_semis:
+        smells.append(f"Unnecessary Semicolons: {len(unnecessary_semis)} found")
 
     return list(set(smells)), {
         'total_lines': num_lines,
