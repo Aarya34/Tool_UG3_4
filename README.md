@@ -76,6 +76,7 @@ Our project aims to improve code quality in open-source repositories by detectin
     - A small 🛈 (info icon) will appear next to each **file/folder**.
     - Click the icon to view **all detected code smells** for that folder.
 
+#### Testing Repo - https://github.com/akash-madugundi/testing.git
 ---
 
 ## Methodology & Techniques
