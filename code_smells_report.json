@@ -1,258 +1,182 @@
 {
     "python": {
-        "app.py": {
-            "high_complexity_functions": [
-                "excelColnoToColNo"
-            ],
+        "TestPy.py": {
             "deeply_nested_functions": [
-                "refactor_special_missing_values_endpoint",
-                "refactor_missing_values_endpoint",
-                "excelColnoToColNo"
-            ],
-            "too_many_returns": [
-                "excelColnoToColNo"
+                "process",
+                "giant_method"
             ],
             "feature_envy": [
-                "regularExp"
+                "__init__"
             ],
             "data_clumps": [
-                []
+                [
+                    "data"
+                ],
+                [],
+                [
+                    "self"
+                ]
             ],
             "shotgun_surgery": [
+                "print"
+            ],
+            "useless_exceptions": [
+                94
+            ],
+            "duplicate_code": [
+                [
+                    "do_something",
+                    "do_something_else"
+                ],
+                [
+                    "method1",
+                    "method2",
+                    "method3",
+                    "method4",
+                    "method5",
+                    "method6",
+                    "method7",
+                    "method8",
+                    "method9",
+                    "method10"
+                ]
+            ],
+            "global_variables": [
+                "__name__",
+                "range",
+                "a",
+                "b",
+                "range",
+                "name",
+                "email",
+                "address",
+                "phone",
+                "age",
+                "gender",
+                "print",
+                "print",
+                "ZeroDivisionError",
+                "print",
+                "process",
+                "calculate",
+                "simulate_large_file",
+                "giant_method",
+                "large_function",
+                "update_user_info",
+                "dead_code_example",
+                "shotgun_surgery",
+                "useless_exception",
+                "do_something",
+                "do_something_else",
+                "LargeClass",
+                "large_parameters",
+                "update_global",
                 "len",
-                "jsonify"
+                "e",
+                "e",
+                "len",
+                "self",
+                "self",
+                "self",
+                "self",
+                "self",
+                "self",
+                "print",
+                "num",
+                "print",
+                "z",
+                "a",
+                "b",
+                "i",
+                "d",
+                "i",
+                "print",
+                "i",
+                "name",
+                "email",
+                "address",
+                "phone",
+                "age",
+                "gender",
+                "print",
+                "print",
+                "name",
+                "email",
+                "address",
+                "phone",
+                "age",
+                "gender",
+                "city",
+                "state",
+                "i",
+                "c",
+                "a",
+                "b",
+                "c",
+                "d",
+                "i",
+                "print",
+                "i",
+                "i",
+                "num",
+                "i",
+                "a",
+                "b",
+                "range",
+                "print",
+                "self",
+                "self",
+                "self",
+                "self",
+                "i",
+                "i",
+                "i",
+                "j",
+                "i",
+                "print",
+                "print",
+                "i",
+                "i",
+                "j",
+                "j",
+                "i",
+                "i"
+            ],
+            "large_parameters": [
+                "update_user_info",
+                "large_parameters",
+                "__init__"
             ]
-        },
-        "correlated.py": {
-            "deeply_nested_functions": [
-                "correlated"
-            ],
-            "feature_envy": [
-                "generate_heatmap",
-                "correlated"
-            ],
-            "data_clumps": [
-                [
-                    "df"
-                ]
-            ]
-        },
-        "duplicates.py": {
-            "feature_envy": [
-                "duplicated"
-            ]
-        },
-        "imbalance.py": {
-            "high_complexity_functions": [
-                "generate_bargraph_class_imbal"
-            ],
-            "deeply_nested_functions": [
-                "binning_cat",
-                "refactor_binning_cat",
-                "class_imbal"
-            ],
-            "feature_envy": [
-                "class_imbal",
-                "refactor_class_imbal",
-                "generate_bargraph_class_imbal",
-                "generate_bargraph_binning_cat"
-            ],
-            "data_clumps": [
-                [
-                    "df"
-                ],
-                [
-                    "df",
-                    "threshold"
-                ]
-            ],
-            "shotgun_surgery": [
-                "len"
-            ]
-        },
-        "outliers.py": {
-            "deeply_nested_functions": [
-                "Outliers"
-            ],
-            "excessive_comments": "40.37% comments",
-            "feature_envy": [
-                "generate_boxplot"
-            ],
-            "data_clumps": [
-                [
-                    "df"
-                ]
-            ]
-        },
-        "sp_missingvalues.py": {
-            "high_complexity_functions": [
-                "SpecialMissingValues"
-            ],
-            "deeply_nested_functions": [
-                "SpecialMissingValues",
-                "missing_values"
-            ],
-            "feature_envy": [
-                "generate_bargraph_special_missing_values",
-                "generate_bargraph_nan_values",
-                "SpecialMissingValues",
-                "missing_values"
-            ],
-            "data_clumps": [
-                [
-                    "df"
-                ]
-            ]
-        },
-        "stringsmells.py": {
-            "deeply_nested_functions": [
-                "detect_binary_missing_values",
-                "detect_integer_as_string",
-                "detect_special_characters",
-                "refactor_special_char",
-                "refactor_integer_as_string",
-                "trailing_spaces",
-                "human_friendly",
-                "refactor_human_friendly"
-            ],
-            "too_many_returns": [
-                "detect_integer_as_string",
-                "refactor_integer_as_string"
-            ],
-            "feature_envy": [
-                "generate_bargraph_special_characters",
-                "generate_bargraph_trailing_spaces",
-                "generate_bargraph_human_friendly"
-            ],
-            "data_clumps": [
-                [
-                    "cell"
-                ],
-                [
-                    "df"
-                ]
-            ],
-            "shotgun_surgery": [
-                "len"
-            ]
-        },
-        "ui.py": {
-            "excessive_comments": "100.00% comments"
         }
     },
     "javascript": {
-        "App.js": [
+        "TestJs.js": [
             [
-                "Magic Numbers Found: 3 occurrences"
+                "Unused Variables: 6 variables",
+                "Unnecessary Semicolons: 1 found",
+                "Deep Nesting (>=4 levels): 6 levels",
+                "Console Log Overuse (\u226510 logs): 22 logs",
+                "Long Chained Calls Found: 1 chains",
+                "Empty Catch Blocks Found: 1 blocks",
+                "Callback Hell Detected: 5 nested functions",
+                "Magic Numbers Found: 14 occurrences",
+                "Too Many Parameters (>4): 8 parameters",
+                "Inconsistent Naming Found: Mixed camelCase and snake_case (2 snake, 14 camel)",
+                "Global Variables Found: 6 variables"
             ],
             {
-                "total_lines": 25,
-                "num_console_logs": 0,
-                "num_functions": 0,
-                "function_lengths": [],
-                "max_nesting_level": 1
-            }
-        ],
-        "App.test.js": [
-            [
-                "Low Comment Density (<2%): 0 comments",
-                "Global Variables Found: 1 variables"
-            ],
-            {
-                "total_lines": 8,
-                "num_console_logs": 0,
-                "num_functions": 0,
-                "function_lengths": [],
-                "max_nesting_level": 1
-            }
-        ],
-        "index.js": [
-            [
-                "Global Variables Found: 1 variables"
-            ],
-            {
-                "total_lines": 17,
-                "num_console_logs": 1,
-                "num_functions": 0,
-                "function_lengths": [],
-                "max_nesting_level": 0
-            }
-        ],
-        "reportWebVitals.js": [
-            [
-                "Low Comment Density (<2%): 0 comments",
-                "Global Variables Found: 1 variables"
-            ],
-            {
-                "total_lines": 13,
-                "num_console_logs": 0,
-                "num_functions": 0,
-                "function_lengths": [],
-                "max_nesting_level": 3
-            }
-        ],
-        "setupTests.js": [
-            [],
-            {
-                "total_lines": 5,
-                "num_console_logs": 0,
-                "num_functions": 0,
-                "function_lengths": [],
-                "max_nesting_level": 0
-            }
-        ],
-        "Codebox.js": [
-            [
-                "Global Variables Found: 4 variables",
-                "Duplicate Code Blocks: 1 blocks repeated",
-                "Magic Numbers Found: 1 occurrences"
-            ],
-            {
-                "total_lines": 92,
-                "num_console_logs": 0,
-                "num_functions": 0,
-                "function_lengths": [],
-                "max_nesting_level": 3
-            }
-        ],
-        "data.js": [
-            [
-                "Low Comment Density (<2%): 0 comments",
-                "Magic Numbers Found: 134 occurrences"
-            ],
-            {
-                "total_lines": 235,
-                "num_console_logs": 0,
-                "num_functions": 0,
-                "function_lengths": [],
-                "max_nesting_level": 1
-            }
-        ],
-        "Excel.js": [
-            [
-                "Magic Numbers Found: 8 occurrences"
-            ],
-            {
-                "total_lines": 50,
-                "num_console_logs": 0,
-                "num_functions": 0,
-                "function_lengths": [],
-                "max_nesting_level": 1
-            }
-        ],
-        "form.js": [
-            [
-                "Unused Variables: 2 variables",
-                "Magic Numbers Found: 3 occurrences",
-                "Global Variables Found: 6 variables",
-                "Duplicate Code Blocks: 2 blocks repeated"
-            ],
-            {
-                "total_lines": 90,
-                "num_console_logs": 2,
-                "num_functions": 0,
-                "function_lengths": [],
-                "max_nesting_level": 3
+                "total_lines": 69,
+                "num_console_logs": 22,
+                "num_functions": 6,
+                "function_lengths": [
+                    46,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "max_nesting_level": 6
             }
         ]
     }

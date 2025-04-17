@@ -15,16 +15,16 @@ def analyze_js_code(file_path):
     # --- Global Variables ---
     var_decls = re.findall(r'(?:var|let|const)\s+(\w+)', code)
     for var in var_decls:
-        if not re.search(rf'function\s+\w+\s*\(.\)\s{{.\b{var}\b.}}', code):
+        if re.findall(rf'\b{re.escape(var)}\b', code) == [var]:
             global_variables.append(var)
     if global_variables:
         smells.append(f"Global Variables Found: {len(global_variables)} variables")
 
     # --- Long Function & Too Many Parameters ---
-    function_defs = re.finditer(r'function\s+(\w+)?\s*\(([^)])\)\s{', code)
+    function_defs = re.finditer(r'function\s+\w*\s*\((.*?)\)\s*\{', code, re.DOTALL)
     for match in function_defs:
         start = match.start()
-        params = match.group(2).split(',')
+        params = match.group(1).split(',')
         param_count = len([p.strip() for p in params if p.strip()])
         if param_count > 4:
             smells.append(f"Too Many Parameters (>4): {param_count} parameters")
@@ -50,9 +50,9 @@ def analyze_js_code(file_path):
         smells.append(f"Large File (>300 lines): {num_lines} lines")
 
     # --- Console Log Overuse ---
-    console_logs = [line for line in lines if 'console.log' in line]
-    if len(console_logs) > 10:
-        smells.append(f"Console Log Overuse (>10 logs): {len(console_logs)} logs")
+    console_logs = re.findall(r'\bconsole\.log\b', code)
+    if len(console_logs) >= 10:
+        smells.append(f"Console Log Overuse (≥10 logs): {len(console_logs)} logs")
 
     # --- Deep Nesting ---
     nesting_level = 0
@@ -88,31 +88,36 @@ def analyze_js_code(file_path):
         smells.append(f"Unused Variables: {len(unused_vars)} variables")
 
     # --- Long Chained Calls ---
-    long_chains = re.findall(r'\w+\.(?:\w+\.){3,}', code)
+    long_chains = re.findall(r'\w+(?:\.\w+){3,}', code)
     if long_chains:
         smells.append(f"Long Chained Calls Found: {len(long_chains)} chains")
 
     # --- Inconsistent Naming ---
-    camel_case_vars = re.findall(r'\b[a-z][a-zA-Z0-9]*\b', code)
-    snake_case_vars = re.findall(r'\b[a-z0-9]+(?:_[a-z0-9]+)+\b', code)
-    inconsistent_names = [name for name in camel_case_vars if name in snake_case_vars]
-    if inconsistent_names:
-        smells.append(f"Inconsistent Naming Found: {len(inconsistent_names)} inconsistencies")
+    snake_case = set(re.findall(r'\b[a-z]+(?:_[a-z]+)+\b', code))
+    camel_case = set(re.findall(r'\b[a-z]+(?:[A-Z][a-zA-Z0-9]*)+\b', code))
+    if snake_case and camel_case:
+        smells.append(f"Inconsistent Naming Found: Mixed camelCase and snake_case ({len(snake_case)} snake, {len(camel_case)} camel)")
 
-    # --- Callback Hell (Deeply Nested Callbacks) ---
-    callback_patterns = re.findall(r'\(\s*function\s*\(.\)\s\{', code)
-    nested_callbacks = [callback for callback in callback_patterns if callback.count('{') > 3]
-    if nested_callbacks:
-        smells.append(f"Callback Hell Detected: {len(nested_callbacks)} deeply nested callbacks")
+    # --- Callback Hell (4+ nested function definitions) ---
+    nested_callback_depth = 0
+    max_callback_depth = 0
+    for line in lines:
+        if re.search(r'function\s*\(', line) and '=>' not in line:
+            nested_callback_depth += 1
+            max_callback_depth = max(max_callback_depth, nested_callback_depth)
+        if '}' in line:
+            nested_callback_depth = max(0, nested_callback_depth - 1)
+    if max_callback_depth >= 4:
+        smells.append(f"Callback Hell Detected: {max_callback_depth} nested functions")
 
     # --- Low Comment Density ---
-    comments = [line for line in lines if line.strip().startswith('//') or line.strip().startswith('/*')]
+    comments = [line for line in lines if line.strip().startswith('//') or '/*' in line or '*/' in line]
     comment_ratio = len(comments) / num_lines if num_lines else 0
     if comment_ratio < 0.02:
         smells.append(f"Low Comment Density (<2%): {len(comments)} comments")
 
     # --- Empty Catch Blocks ---
-    empty_catches = re.findall(r'catch\s*\(.\)\s\{\s*\}', code)
+    empty_catches = re.findall(r'catch\s*\(.*?\)\s*\{\s*\}', code, re.DOTALL)
     if empty_catches:
         smells.append(f"Empty Catch Blocks Found: {len(empty_catches)} blocks")
 
@@ -128,3 +133,12 @@ def analyze_js_code(file_path):
         'function_lengths': function_details,
         'max_nesting_level': max_nesting,
     }
+
+# if __name__ == "__main__":
+#     smells, metrics = analyze_js_code("sample.js")
+#     print("Detected Smells:")
+#     for smell in smells:
+#         print("-", smell)
+#     print("\nCode Metrics:")
+#     for key, value in metrics.items():
+#         print(f"{key}: {value}")
