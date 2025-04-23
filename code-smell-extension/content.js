@@ -30,7 +30,8 @@
             if ((content?.smells?.length > 0) || content?.metrics) {
                 smellsByFile[file] = {
                     smells: content.smells || [],
-                    metrics: content.metrics || {}
+                    metrics: content.metrics || {},
+                    code: content.code || ""
                 };
             }
         });
@@ -39,7 +40,8 @@
             if ((content?.smells?.length > 0) || content?.metrics) {
                 smellsByFile[file] = {
                     smells: content.smells || [],
-                    metrics: content.metrics || {}
+                    metrics: content.metrics || {},
+                    code: content.code || ""
                 };
             }
         });
@@ -61,6 +63,7 @@
                 const fileData = matchedKey ? smellsByFile[matchedKey] : null;
                 const fileSmells = fileData?.smells || [];
                 const metrics = fileData?.metrics || {};
+                const code = fileData?.code || "";
 
                 // ℹ️ Smell icon
                 if (fileSmells.length > 0 && !link.parentElement.querySelector('.smell-indicator')) {
@@ -124,13 +127,34 @@
                             <ul style="margin-top: 10px; padding-left: 20px;">
                                 ${fileSmells.map(smell => `<li>${smell}</li>`).join('')}
                             </ul>
-                            <button class="closeModal" style="margin-top: 20px; background: #f06; color: white; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+                            <div style="margin-top: 20px;">
+                                <button class="refactorBtn" style="background: #0a0; color: white; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer;">Refactor Code</button>
+                                <button class="closeModal" style="background: #f06; color: white; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">Close</button>
+                            </div>
                         `;
 
                         document.body.appendChild(modal);
                         modal.querySelector('.closeModal').addEventListener('click', () => modal.remove());
+                        modal.querySelector('.refactorBtn').addEventListener('click', () => {
+                            const refactorTab = window.open('http://127.0.0.1:3000/refactor/refactor.html', '_blank');
+                            // const refactorTab = window.open('http://127.0.0.1:5500/refactor/refactor.html', '_blank');     // correct accordingly
+                        
+                            // Wait for the new tab to load before sending the message
+                            const codePayload = { filename: fileName, code };
+                        
+                            const sendMessage = () => {
+                                refactorTab.postMessage(codePayload, '*');
+                            };
+                        
+                            // Use interval to ensure message is sent after the page loads
+                            const intervalId = setInterval(() => {
+                                if (refactorTab && refactorTab.postMessage) {
+                                    sendMessage();
+                                    clearInterval(intervalId);
+                                }
+                            }, 500);
+                        });                        
                     });
-
                     link.parentElement.appendChild(infoIcon);
                 }
 
@@ -179,7 +203,7 @@
                         modal.innerHTML = `
                             <h2>Metrics in ${fileName}</h2>
                             <div>${bars}</div>
-                            <button class="closeMetrics" style="margin-top: 20px; background: #06f; color: white; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+                            <button class="closeMetrics" style="margin-top: 20px; background: #f06; color: white; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer;">Close</button>
                         `;
 
                         document.body.appendChild(modal);

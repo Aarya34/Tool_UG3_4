@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Refactor Editor</title>
+
+  <!-- CodeMirror Styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css" />
+  <style>
+    body {
+      font-family: sans-serif;
+      padding-left: 20px;
+    }
+  
+    #editor {
+        display: none; /* Hide the raw textarea */
+    }
+
+    .CodeMirror {
+        height: 550px;
+        width: 91rem;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        font-size: 14px;
+    }
+  </style>  
+</head>
+<body>
+  <h1>Refactor Code</h1>
+  <textarea id="editor"></textarea>
+
+  <!-- CodeMirror Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/javascript/javascript.min.js"></script>
+  <script>
+    window.editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+        lineNumbers: true,
+        mode: "javascript",
+        theme: "default"
+    });
+
+    window.addEventListener("message", (event) => {
+    // ✅ Only process messages that contain both 'filename' and 'code'
+    if (event.data && event.data.filename && event.data.code) {
+        const { filename, code } = event.data;
+        // console.log("✅ Received valid code:", code);
+        const mode = filename.endsWith('.py') ? 'python' : 'javascript';
+        window.editor.setOption("mode", mode);
+        window.editor.setValue(code);
+    }
+    });
+  </script>
+</body>
+</html>

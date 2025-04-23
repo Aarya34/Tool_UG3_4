@@ -38,7 +38,8 @@ def analyze_repo(repo_url):
             smells, metrics = analyze_py_code(file)
             report[file.name] = {
                 "smells": smells,
-                "metrics": metrics
+                "metrics": metrics,
+                "code": file.read_text(encoding="utf-8", errors="ignore")
             }
         except Exception as e:
             print(f"[-] Error analyzing Python file {file.name}: {str(e)}")
@@ -49,7 +50,8 @@ def analyze_repo(repo_url):
             smells, metrics = analyze_js_code(file)
             smell_report[file.name] = {
                 "smells": smells,
-                "metrics": metrics
+                "metrics": metrics,
+                "code": file.read_text(encoding="utf-8", errors="ignore")
             }
         except Exception as e:
             print(f"[-] Error analyzing JS file {file.name}: {str(e)}")
@@ -79,6 +81,8 @@ def analyze_repo(repo_url):
         print("Metrics:")
         for key, value in data["metrics"].items():
             print(f"  {key}: {value}")
+        # print("Code:")
+        # print(data["code"])
 
     print("\n[JavaScript Code Smells]")
     for filename, data in smell_report.items():
@@ -90,6 +94,8 @@ def analyze_repo(repo_url):
         print("Metrics:")
         for key, value in data["metrics"].items():
             print(f"  {key}: {value}")
+        # print("Code:")
+        # print(data["code"])
 
     return {
         "python": report,

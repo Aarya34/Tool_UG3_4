@@ -7,9 +7,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-sample.js
-sample.py
-code_smells_report.json
+detector/sample.js
+detector/sample.py
+detector/code_smells_report.json
 
 node_modules
 dist
