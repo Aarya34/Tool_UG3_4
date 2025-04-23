@@ -5,7 +5,7 @@ import tempfile
 import stat
 import json
 from pathlib import Path
-from py_analyzer import analyze_python_code
+from py_analyzer import analyze_py_code
 from js_analyzer import analyze_js_code
 
 REPO_DIR = "temp_repo"
@@ -21,7 +21,6 @@ def clone_github_repo(repo_url):
     print("[+] Clone complete.")
     return temp_dir
 
-
 def analyze_repo(repo_url):
     repo_path = clone_github_repo(repo_url)
     if not repo_path:
@@ -36,21 +35,26 @@ def analyze_repo(repo_url):
     report = {}
     for file in python_files:
         try:
-            with open(file, "r", encoding="utf-8") as f:
-                code = f.read()
-                report[file.name] = analyze_python_code(code)
+            smells, metrics = analyze_py_code(file)
+            report[file.name] = {
+                "smells": smells,
+                "metrics": metrics
+            }
         except Exception as e:
             print(f"[-] Error analyzing Python file {file.name}: {str(e)}")
 
     smell_report = {}
     for file in js_files:
         try:
-            smells, details = analyze_js_code(file)
-            smell_report[file.name] = (smells, details)
+            smells, metrics = analyze_js_code(file)
+            smell_report[file.name] = {
+                "smells": smells,
+                "metrics": metrics
+            }
         except Exception as e:
             print(f"[-] Error analyzing JS file {file.name}: {str(e)}")
 
-    # Clean up temp repo (force delete if needed)
+    # Clean up temp repo
     shutil.rmtree(repo_path, onerror=lambda _, path, __: os.chmod(path, stat.S_IWRITE))
 
     combined_report = {
@@ -65,24 +69,27 @@ def analyze_repo(repo_url):
     
     print(f"\n[+] Code smells report saved to {output_file}")
 
-    # Optional: Print results to console
+    # Print results to console
     print("\n[Python Code Smells]")
-    for filename, issues in report.items():
+    for filename, data in report.items():
         print(f"\nFile: {filename}")
-        for issue, detail in issues.items():
-            print(f"  {issue}: {detail}")
+        print("Detected Smells:")
+        for smell in data["smells"]:
+            print(f"  - {smell}")
+        print("Metrics:")
+        for key, value in data["metrics"].items():
+            print(f"  {key}: {value}")
 
     print("\n[JavaScript Code Smells]")
-    for file, (smells, details) in smell_report.items():
+    for filename, data in smell_report.items():
         print("\n==========")
-        print(f"File: {file}")
-        print(f"Total Lines: {details['total_lines']}")
-        print(f"Functions: {details['num_functions']}, Lengths: {details['function_lengths']}")
-        print(f"Console Logs: {details['num_console_logs']}")
-        print(f"Max Nesting Level: {details['max_nesting_level']}")
+        print(f"File: {filename}")
         print("Detected Smells:")
-        for smell in smells:
+        for smell in data["smells"]:
             print(f"  - {smell}")
+        print("Metrics:")
+        for key, value in data["metrics"].items():
+            print(f"  {key}: {value}")
 
     return {
         "python": report,
