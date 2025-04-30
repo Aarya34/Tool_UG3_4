@@ -65,4 +65,48 @@ def refactor_large_functions(code, functions_to_refactor):
     return code
 
 # Base Function to Apply Refactorings
+def refactor_js_code(code, smells):
+    """
+    This function accepts the main code and a dictionary of detected smells
+    and applies the relevant refactoring functions.
+    """
+    
+    # Refactor Global Variables
+    if "Global Variables Found" in smells:
+        global_vars = smells["Global Variables Found"]["details"]
+        code = refactor_global_variables(code, global_vars)
 
+    # Refactor Magic Numbers
+    if "Magic Numbers Found" in smells:
+        magic_numbers = smells["Magic Numbers Found"]["details"]
+        code = refactor_magic_numbers(code, magic_numbers)
+
+    # Refactor Duplicate Code
+    if "Duplicate Code" in smells:
+        duplicate_blocks = smells["Duplicate Code"]["details"]
+        code = refactor_duplicate_code(code, duplicate_blocks)
+
+    # Refactor Unused Variables
+    if "Unused Variables" in smells:
+        unused_vars = smells["Unused Variables"]["details"]
+        code = refactor_unused_variables(code, unused_vars)
+
+    # Refactor Callback Hell (Deep Nesting)
+    if "Deep Nesting" in smells:
+        nested_callbacks = smells["Deep Nesting"]["details"]
+        code = refactor_callback_hell(code, nested_callbacks)
+
+    # Refactor Dead Code Variables
+    if "Dead Code Variables" in smells:
+        dead_code_vars = smells["Dead Code Variables"]["details"]
+        code = refactor_dead_code_variables(code, dead_code_vars)
+
+    # Refactor Excessive Comments
+    code = refactor_excessive_comments(code)
+
+    # Refactor Large Functions
+    if "Large Functions" in smells:
+        large_functions = smells["Large Functions"]["details"]
+        code = refactor_large_functions(code, large_functions)
+
+    return code

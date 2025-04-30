@@ -1,607 +1,250 @@
 {
     "python": {
+        "code_analyzer.py": {
+            "smells": [
+                "High Complexity Functions (>10): 1 - ['_analyze_duplicate_code(13)']",
+                "Large File (>500 lines): 563 lines",
+                "Deeply Nested Functions (>3): 9 - ['_analyze_complex_functions(4)', '_analyze_nesting(5)', '_analyze_feature_envy(4)', '_analyze_duplicate_code(4)', '_analyze_long_methods(4)', '_analyze_magic_numbers(4)', '_analyze_unused_variables(5)', '_find_matching_brace(5)', '_split_function_into_parts(4)']",
+                "Feature Envy (>5 external calls): 16 - ['_analyze_python(7)', '_analyze_javascript(6)', '_analyze_complex_functions(9)', '_analyze_nesting(19)', '_analyze_feature_envy(9)', '_analyze_duplicate_code(16)', '_analyze_long_methods(9)', '_analyze_magic_numbers(13)', '_analyze_unused_variables(17)', '_calculate_complexity(6)', '_get_max_nesting_depth(8)', '_find_unused_variables(9)', '_split_function_into_parts(10)', '_generate_refactored_complex_function(8)', '_flatten_nested_code(10)', '_remove_unused_variables(14)']",
+                "Data Clumps (Repeated params): 7 sets - [['self', 'func_name', 'parts'], ['self', 'node', 'original_code'], ['self', 'node', 'unused_vars'], ['self', 'block'], ['self', 'nested_code'], ['self', 'node'], ['self']]",
+                "Shotgun Surgery (Function called >10 times): 1 - [('isinstance', 14)]",
+                "Large Classes (>10 methods): 1 - ['CodeAnalyzer(42)']",
+                "Global Variables (Not in function/class): 44 - ['node', 'defaultdict', 'ast', 'List', 're', 'isinstance', 'part_type', 'var', 'len', 'stmts', 'set', 'tuple', 'Tuple', 'match', 'line', 'all', 'func', 'num', 'child', 'max', 'self', 'range', 'callbacks', 'funcs', 'code', 'language', 'chr', 'f', 'abs', 'hash', 'depth', 'astor', 'int', 'str', 'func_name', 'stmt', 'Dict', 'arg', 'callback', 'Any', 'numbers', 'i', 'enumerate', 'list']"
+            ],
+            "metrics": {
+                "total_lines": 563,
+                "num_functions": 42,
+                "function_lengths": [
+                    4,
+                    3,
+                    8,
+                    7,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    2,
+                    3,
+                    4,
+                    4,
+                    5,
+                    4,
+                    6,
+                    4,
+                    4,
+                    3,
+                    4,
+                    4,
+                    4,
+                    2,
+                    4,
+                    3,
+                    3,
+                    4,
+                    2,
+                    8,
+                    3,
+                    6,
+                    6,
+                    4,
+                    2,
+                    2,
+                    2,
+                    4,
+                    2,
+                    4,
+                    2,
+                    2
+                ],
+                "num_prints": 0
+            },
+            "code": "import ast\nimport re\nfrom typing import Dict, List, Tuple, Any\nimport astor\nfrom collections import defaultdict\n\nclass CodeAnalyzer:\n    def __init__(self, code: str, language: str):\n        self.code = code\n        self.language = language\n        self.tree = ast.parse(code) if language == 'python' else None\n        self.smells = {}\n        \n    def analyze(self) -> Dict[str, Any]:\n        \"\"\"Analyze the code and return detected smells with refactoring suggestions.\"\"\"\n        if self.language == 'python':\n            self._analyze_python()\n        else:\n            self._analyze_javascript()\n        return self.smells\n    \n    def _analyze_python(self):\n        \"\"\"Analyze Python code for smells and generate specific refactoring suggestions.\"\"\"\n        # High Complexity Functions\n        self._analyze_complex_functions()\n        \n        # Deep Nesting\n        self._analyze_nesting()\n        \n        # Feature Envy\n        self._analyze_feature_envy()\n        \n        # Duplicate Code\n        self._analyze_duplicate_code()\n        \n        # Long Methods\n        self._analyze_long_methods()\n        \n        # Magic Numbers\n        self._analyze_magic_numbers()\n        \n        # Unused Variables\n        self._analyze_unused_variables()\n    \n    def _analyze_javascript(self):\n        \"\"\"Analyze JavaScript code for smells and generate specific refactoring suggestions.\"\"\"\n        # Global Variables\n        self._analyze_global_variables()\n        \n        # Callback Hell\n        self._analyze_callback_hell()\n        \n        # Magic Numbers\n        self._analyze_magic_numbers()\n        \n        # Duplicate Code\n        self._analyze_duplicate_code()\n        \n        # Unused Variables\n        self._analyze_unused_variables()\n        \n        # Deep Nesting\n        self._analyze_nesting()\n    \n    def _analyze_complex_functions(self):\n        \"\"\"Analyze functions for high cyclomatic complexity.\"\"\"\n        for node in ast.walk(self.tree):\n            if isinstance(node, ast.FunctionDef):\n                complexity = self._calculate_complexity(node)\n                if complexity > 10:\n                    func_code = astor.to_source(node)\n                    self.smells[f\"high_complexity_{node.name}\"] = {\n                        \"type\": \"high_complexity\",\n                        \"details\": f\"Function '{node.name}' has complexity of {complexity}\",\n                        \"refactoring\": self._suggest_complexity_refactoring(node, func_code)\n                    }\n    \n    def _analyze_nesting(self):\n        \"\"\"Analyze code for deep nesting.\"\"\"\n        if self.language == 'python':\n            for node in ast.walk(self.tree):\n                if isinstance(node, ast.FunctionDef):\n                    max_depth = self._get_max_nesting_depth(node)\n                    if max_depth > 3:\n                        func_code = astor.to_source(node)\n                        self.smells[f\"deep_nesting_{node.name}\"] = {\n                            \"type\": \"deep_nesting\",\n                            \"details\": f\"Function '{node.name}' has nesting depth of {max_depth}\",\n                            \"refactoring\": self._suggest_nesting_refactoring(node, func_code)\n                        }\n        else:\n            # JavaScript nesting analysis\n            nested_patterns = re.finditer(r'\\(\\s*function\\s*\\(.\\)\\s\\{', self.code)\n            for match in nested_patterns:\n                start = match.start()\n                end = self._find_matching_brace(self.code, start)\n                if end != -1:\n                    nested_code = self.code[start:end+1]\n                    if nested_code.count('{') > 3:\n                        self.smells[f\"deep_nesting_{start}\"] = {\n                            \"type\": \"deep_nesting\",\n                            \"details\": \"Deeply nested callback function found\",\n                            \"refactoring\": self._suggest_js_nesting_refactoring(nested_code)\n                        }\n    \n    def _analyze_feature_envy(self):\n        \"\"\"Analyze code for feature envy.\"\"\"\n        for node in ast.walk(self.tree):\n            if isinstance(node, ast.FunctionDef):\n                external_calls = self._count_external_calls(node)\n                if external_calls > 5:\n                    func_code = astor.to_source(node)\n                    self.smells[f\"feature_envy_{node.name}\"] = {\n                        \"type\": \"feature_envy\",\n                        \"details\": f\"Function '{node.name}' makes {external_calls} external calls\",\n                        \"refactoring\": self._suggest_feature_envy_refactoring(node, func_code)\n                    }\n    \n    def _analyze_duplicate_code(self):\n        \"\"\"Analyze code for duplication.\"\"\"\n        if self.language == 'python':\n            function_bodies = defaultdict(list)\n            for node in ast.walk(self.tree):\n                if isinstance(node, ast.FunctionDef):\n                    body_str = \"\".join(ast.dump(stmt) for stmt in node.body)\n                    function_bodies[body_str].append(node)\n            \n            for body, funcs in function_bodies.items():\n                if len(funcs) > 1:\n                    func_code = astor.to_source(funcs[0])\n                    self.smells[f\"duplicate_code_{funcs[0].name}\"] = {\n                        \"type\": \"duplicate_code\",\n                        \"details\": f\"Code duplicated in functions: {', '.join(f.name for f in funcs)}\",\n                        \"refactoring\": self._suggest_duplicate_code_refactoring(funcs, func_code)\n                    }\n        else:\n            # JavaScript duplicate code analysis\n            lines = self.code.split('\\n')\n            block_counts = defaultdict(int)\n            for i in range(len(lines) - 2):\n                block = tuple(lines[i:i+3])\n                if all(line.strip() for line in block):\n                    block_counts[block] += 1\n            \n            for block, count in block_counts.items():\n                if count > 1:\n                    self.smells[f\"duplicate_code_{hash(block)}\"] = {\n                        \"type\": \"duplicate_code\",\n                        \"details\": f\"Code block duplicated {count} times\",\n                        \"refactoring\": self._suggest_js_duplicate_code_refactoring(block)\n                    }\n    \n    def _analyze_long_methods(self):\n        \"\"\"Analyze methods for excessive length.\"\"\"\n        for node in ast.walk(self.tree):\n            if isinstance(node, ast.FunctionDef):\n                lines = len(node.body)\n                if lines > 20:\n                    func_code = astor.to_source(node)\n                    self.smells[f\"long_method_{node.name}\"] = {\n                        \"type\": \"long_method\",\n                        \"details\": f\"Function '{node.name}' has {lines} lines\",\n                        \"refactoring\": self._suggest_long_method_refactoring(node, func_code)\n                    }\n    \n    def _analyze_magic_numbers(self):\n        \"\"\"Analyze code for magic numbers.\"\"\"\n        if self.language == 'python':\n            for node in ast.walk(self.tree):\n                if isinstance(node, ast.Num) and node.n not in [0, 1]:\n                    self.smells[f\"magic_number_{node.n}\"] = {\n                        \"type\": \"magic_number\",\n                        \"details\": f\"Magic number found: {node.n}\",\n                        \"refactoring\": self._suggest_magic_number_refactoring(node)\n                    }\n        else:\n            # JavaScript magic number analysis\n            magic_numbers = re.findall(r'[^a-zA-Z](\\d+)[^a-zA-Z]', self.code)\n            magic_numbers = [num for num in magic_numbers if num not in ['0', '1']]\n            if magic_numbers:\n                self.smells[\"magic_numbers\"] = {\n                    \"type\": \"magic_number\",\n                    \"details\": f\"Magic numbers found: {', '.join(magic_numbers)}\",\n                    \"refactoring\": self._suggest_js_magic_number_refactoring(magic_numbers)\n                }\n    \n    def _analyze_unused_variables(self):\n        \"\"\"Analyze code for unused variables.\"\"\"\n        if self.language == 'python':\n            for node in ast.walk(self.tree):\n                if isinstance(node, ast.FunctionDef):\n                    unused = self._find_unused_variables(node)\n                    if unused:\n                        self.smells[f\"unused_variables_{node.name}\"] = {\n                            \"type\": \"unused_variables\",\n                            \"details\": f\"Unused variables in '{node.name}': {', '.join(unused)}\",\n                            \"refactoring\": self._suggest_unused_variables_refactoring(node, unused)\n                        }\n        else:\n            # JavaScript unused variables analysis\n            var_decls = re.findall(r'(?:var|let|const)\\s+(\\w+)', self.code)\n            unused_vars = []\n            for var in var_decls:\n                if len(re.findall(r'\\b' + re.escape(var) + r'\\b', self.code)) == 1:\n                    unused_vars.append(var)\n            if unused_vars:\n                self.smells[\"unused_variables\"] = {\n                    \"type\": \"unused_variables\",\n                    \"details\": f\"Unused variables: {', '.join(unused_vars)}\",\n                    \"refactoring\": self._suggest_js_unused_variables_refactoring(unused_vars)\n                }\n    \n    def _analyze_global_variables(self):\n        \"\"\"Analyze JavaScript code for global variables.\"\"\"\n        global_vars = re.findall(r'(?:var|let|const)\\s+(\\w+)', self.code)\n        if global_vars:\n            self.smells[\"global_variables\"] = {\n                \"type\": \"global_variables\",\n                \"details\": f\"Global variables found: {', '.join(global_vars)}\",\n                \"refactoring\": self._suggest_global_variables_refactoring(global_vars)\n            }\n    \n    def _analyze_callback_hell(self):\n        \"\"\"Analyze JavaScript code for callback hell.\"\"\"\n        callback_patterns = re.findall(r'\\(\\s*function\\s*\\(.\\)\\s\\{', self.code)\n        nested_callbacks = [callback for callback in callback_patterns if callback.count('{') > 3]\n        if nested_callbacks:\n            self.smells[\"callback_hell\"] = {\n                \"type\": \"callback_hell\",\n                \"details\": \"Deeply nested callbacks found\",\n                \"refactoring\": self._suggest_callback_hell_refactoring(nested_callbacks)\n            }\n    \n    def _calculate_complexity(self, node: ast.AST) -> int:\n        \"\"\"Calculate cyclomatic complexity of a function.\"\"\"\n        complexity = 1\n        for child in ast.walk(node):\n            if isinstance(child, (ast.If, ast.For, ast.While, ast.ExceptHandler)):\n                complexity += 1\n        return complexity\n    \n    def _get_max_nesting_depth(self, node: ast.AST, depth: int = 0) -> int:\n        \"\"\"Calculate maximum nesting depth of a function.\"\"\"\n        if isinstance(node, (ast.If, ast.For, ast.While, ast.With, ast.FunctionDef)):\n            depth += 1\n        max_depth = depth\n        for child in ast.iter_child_nodes(node):\n            max_depth = max(max_depth, self._get_max_nesting_depth(child, depth))\n        return max_depth\n    \n    def _count_external_calls(self, node: ast.FunctionDef) -> int:\n        \"\"\"Count external method calls in a function.\"\"\"\n        external_calls = 0\n        for child in ast.walk(node):\n            if isinstance(child, ast.Attribute) and isinstance(child.value, ast.Name):\n                external_calls += 1\n        return external_calls\n    \n    def _find_unused_variables(self, node: ast.FunctionDef) -> List[str]:\n        \"\"\"Find unused variables in a function.\"\"\"\n        used_vars = set()\n        for child in ast.walk(node):\n            if isinstance(child, ast.Name):\n                used_vars.add(child.id)\n        \n        unused = []\n        for arg in node.args.args:\n            if arg.arg not in used_vars:\n                unused.append(arg.arg)\n        return unused\n    \n    def _find_matching_brace(self, code: str, start: int) -> int:\n        \"\"\"Find the matching closing brace for a given opening brace.\"\"\"\n        count = 0\n        for i in range(start, len(code)):\n            if code[i] == '{':\n                count += 1\n            elif code[i] == '}':\n                count -= 1\n                if count == 0:\n                    return i\n        return -1\n    \n    def _suggest_complexity_refactoring(self, node: ast.FunctionDef, original_code: str) -> Dict[str, str]:\n        \"\"\"Generate specific refactoring suggestions for complex functions.\"\"\"\n        # Analyze the function's structure and generate specific suggestions\n        parts = self._split_function_into_parts(node)\n        refactored_code = self._generate_refactored_complex_function(node.name, parts)\n        \n        return {\n            \"before\": original_code,\n            \"after\": refactored_code,\n            \"explanation\": \"Function was split into smaller, focused functions based on its logical parts\"\n        }\n    \n    def _suggest_nesting_refactoring(self, node: ast.FunctionDef, original_code: str) -> Dict[str, str]:\n        \"\"\"Generate specific refactoring suggestions for deeply nested code.\"\"\"\n        flattened_code = self._flatten_nested_code(node)\n        \n        return {\n            \"before\": original_code,\n            \"after\": flattened_code,\n            \"explanation\": \"Nested conditions were flattened using early returns and helper functions\"\n        }\n    \n    def _suggest_feature_envy_refactoring(self, node: ast.FunctionDef, original_code: str) -> Dict[str, str]:\n        \"\"\"Generate specific refactoring suggestions for feature envy.\"\"\"\n        target_class = self._identify_target_class(node)\n        refactored_code = self._generate_refactored_feature_envy(node, target_class)\n        \n        return {\n            \"before\": original_code,\n            \"after\": refactored_code,\n            \"explanation\": f\"Function was moved to {target_class} where it belongs\"\n        }\n    \n    def _suggest_duplicate_code_refactoring(self, funcs: List[ast.FunctionDef], original_code: str) -> Dict[str, str]:\n        \"\"\"Generate specific refactoring suggestions for duplicate code.\"\"\"\n        common_code = self._extract_common_code(funcs)\n        refactored_code = self._generate_refactored_duplicate_code(funcs, common_code)\n        \n        return {\n            \"before\": original_code,\n            \"after\": refactored_code,\n            \"explanation\": \"Common code was extracted into a shared function\"\n        }\n    \n    def _suggest_long_method_refactoring(self, node: ast.FunctionDef, original_code: str) -> Dict[str, str]:\n        \"\"\"Generate specific refactoring suggestions for long methods.\"\"\"\n        parts = self._split_function_into_parts(node)\n        refactored_code = self._generate_refactored_long_method(node.name, parts)\n        \n        return {\n            \"before\": original_code,\n            \"after\": refactored_code,\n            \"explanation\": \"Long method was split into smaller, focused methods\"\n        }\n    \n    def _suggest_magic_number_refactoring(self, node: ast.Num) -> Dict[str, str]:\n        \"\"\"Generate specific refactoring suggestions for magic numbers.\"\"\"\n        return {\n            \"before\": str(node.n),\n            \"after\": f\"CONSTANT_{abs(node.n)}\",\n            \"explanation\": f\"Magic number {node.n} was replaced with a named constant\"\n        }\n    \n    def _suggest_unused_variables_refactoring(self, node: ast.FunctionDef, unused_vars: List[str]) -> Dict[str, str]:\n        \"\"\"Generate specific refactoring suggestions for unused variables.\"\"\"\n        original_code = astor.to_source(node)\n        refactored_code = self._remove_unused_variables(node, unused_vars)\n        \n        return {\n            \"before\": original_code,\n            \"after\": refactored_code,\n            \"explanation\": f\"Unused variables {', '.join(unused_vars)} were removed\"\n        }\n    \n    def _suggest_js_nesting_refactoring(self, nested_code: str) -> Dict[str, str]:\n        \"\"\"Generate specific refactoring suggestions for JavaScript nested callbacks.\"\"\"\n        refactored_code = self._flatten_js_nesting(nested_code)\n        \n        return {\n            \"before\": nested_code,\n            \"after\": refactored_code,\n            \"explanation\": \"Nested callbacks were flattened using async/await\"\n        }\n    \n    def _suggest_js_duplicate_code_refactoring(self, block: Tuple[str, ...]) -> Dict[str, str]:\n        \"\"\"Generate specific refactoring suggestions for JavaScript duplicate code.\"\"\"\n        refactored_code = self._extract_js_duplicate_code(block)\n        \n        return {\n            \"before\": \"\\n\".join(block),\n            \"after\": refactored_code,\n            \"explanation\": \"Duplicate code was extracted into a reusable function\"\n        }\n    \n    def _suggest_js_magic_number_refactoring(self, numbers: List[str]) -> Dict[str, str]:\n        \"\"\"Generate specific refactoring suggestions for JavaScript magic numbers.\"\"\"\n        constants = \"\\n\".join(f\"const NUM_{i} = {num};\" for i, num in enumerate(numbers))\n        refactored_code = f\"// Define constants\\n{constants}\\n\\n// Use constants instead of magic numbers\"\n        \n        return {\n            \"before\": \", \".join(numbers),\n            \"after\": refactored_code,\n            \"explanation\": \"Magic numbers were replaced with named constants\"\n        }\n    \n    def _suggest_js_unused_variables_refactoring(self, unused_vars: List[str]) -> Dict[str, str]:\n        \"\"\"Generate specific refactoring suggestions for JavaScript unused variables.\"\"\"\n        return {\n            \"before\": f\"let {', '.join(unused_vars)};\",\n            \"after\": \"// Removed unused variables\",\n            \"explanation\": f\"Unused variables {', '.join(unused_vars)} were removed\"\n        }\n    \n    def _suggest_global_variables_refactoring(self, global_vars: List[str]) -> Dict[str, str]:\n        \"\"\"Generate specific refactoring suggestions for JavaScript global variables.\"\"\"\n        module_code = \"const module = (function() {\\n\"\n        for var in global_vars:\n            module_code += f\"    let {var};\\n\"\n        module_code += \"    return {\\n\"\n        module_code += \"        // Expose necessary variables/functions here\\n\"\n        module_code += \"    };\\n\"\n        module_code += \"})();\"\n        \n        return {\n            \"before\": \"\\n\".join(f\"let {var};\" for var in global_vars),\n            \"after\": module_code,\n            \"explanation\": \"Global variables were encapsulated in a module\"\n        }\n    \n    def _suggest_callback_hell_refactoring(self, callbacks: List[str]) -> Dict[str, str]:\n        \"\"\"Generate specific refactoring suggestions for JavaScript callback hell.\"\"\"\n        refactored_code = \"\"\"async function processData() {\n    try {\n        // Use async/await to flatten the callback structure\n        const result1 = await step1();\n        const result2 = await step2(result1);\n        return await step3(result2);\n    } catch (error) {\n        console.error('Error:', error);\n    }\n}\"\"\"\n        \n        return {\n            \"before\": \"\\n\".join(callbacks),\n            \"after\": refactored_code,\n            \"explanation\": \"Callback hell was refactored using async/await\"\n        }\n    \n    def _split_function_into_parts(self, node: ast.FunctionDef) -> List[Tuple[str, List[ast.AST]]]:\n        \"\"\"Split a function into logical parts for refactoring.\"\"\"\n        # Implementation depends on the specific function structure\n        # This is a simplified version\n        parts = []\n        current_part = []\n        \n        for stmt in node.body:\n            if isinstance(stmt, (ast.If, ast.For, ast.While)):\n                if current_part:\n                    parts.append((\"part\", current_part))\n                    current_part = []\n                parts.append((\"control\", [stmt]))\n            else:\n                current_part.append(stmt)\n        \n        if current_part:\n            parts.append((\"part\", current_part))\n        \n        return parts\n    \n    def _generate_refactored_complex_function(self, func_name: str, parts: List[Tuple[str, List[ast.AST]]]) -> str:\n        \"\"\"Generate refactored code for a complex function.\"\"\"\n        refactored = []\n        helper_funcs = []\n        \n        for i, (part_type, stmts) in enumerate(parts):\n            if part_type == \"part\":\n                helper_name = f\"{func_name}_part_{i+1}\"\n                helper_code = astor.to_source(ast.FunctionDef(\n                    name=helper_name,\n                    args=ast.arguments(args=[], vararg=None, kwonlyargs=[], kw_defaults=[], kwarg=None, defaults=[]),\n                    body=stmts,\n                    decorator_list=[]\n                ))\n                helper_funcs.append(helper_code)\n                refactored.append(f\"    result_{i+1} = {helper_name}()\")\n            else:\n                refactored.append(astor.to_source(stmts[0]))\n        \n        main_func = f\"\"\"def {func_name}():\n{chr(10).join('    ' + line for line in refactored)}\n    return combine_results({', '.join(f'result_{i+1}' for i in range(len(parts)) if parts[i][0] == 'part')})\"\"\"\n        \n        return \"\\n\\n\".join(helper_funcs + [main_func])\n    \n    def _flatten_nested_code(self, node: ast.FunctionDef) -> str:\n        \"\"\"Flatten nested code using early returns and helper functions.\"\"\"\n        flattened = []\n        for stmt in node.body:\n            if isinstance(stmt, ast.If):\n                condition = astor.to_source(stmt.test).strip()\n                flattened.append(f\"if not {condition}:\")\n                flattened.append(\"    return False\")\n            else:\n                flattened.append(astor.to_source(stmt))\n        \n        return f\"\"\"def {node.name}():\n{chr(10).join('    ' + line for line in flattened)}\n    return True\"\"\"\n    \n    def _identify_target_class(self, node: ast.FunctionDef) -> str:\n        \"\"\"Identify the target class for feature envy refactoring.\"\"\"\n        # Simplified implementation - in reality, this would analyze the function's\n        # interactions with different classes to determine the best target\n        return \"TargetClass\"\n    \n    def _generate_refactored_feature_envy(self, node: ast.FunctionDef, target_class: str) -> str:\n        \"\"\"Generate refactored code for feature envy.\"\"\"\n        return f\"\"\"class {target_class}:\n    def {node.name}(self):\n        # Move the logic here\n        pass\"\"\"\n    \n    def _extract_common_code(self, funcs: List[ast.FunctionDef]) -> str:\n        \"\"\"Extract common code from duplicate functions.\"\"\"\n        # Simplified implementation - in reality, this would analyze the functions\n        # to find the common parts\n        return \"def shared_functionality():\\n    # Common code goes here\\n    pass\"\n    \n    def _generate_refactored_duplicate_code(self, funcs: List[ast.FunctionDef], common_code: str) -> str:\n        \"\"\"Generate refactored code for duplicate functions.\"\"\"\n        refactored = [common_code]\n        for func in funcs:\n            refactored.append(f\"\"\"def {func.name}():\n    shared_functionality()\n    # Additional specific code\"\"\")\n        return \"\\n\\n\".join(refactored)\n    \n    def _generate_refactored_long_method(self, func_name: str, parts: List[Tuple[str, List[ast.AST]]]) -> str:\n        \"\"\"Generate refactored code for a long method.\"\"\"\n        return self._generate_refactored_complex_function(func_name, parts)\n    \n    def _remove_unused_variables(self, node: ast.FunctionDef, unused_vars: List[str]) -> str:\n        \"\"\"Remove unused variables from a function.\"\"\"\n        # Create a new function definition without the unused variables\n        new_args = [arg for arg in node.args.args if arg.arg not in unused_vars]\n        new_node = ast.FunctionDef(\n            name=node.name,\n            args=ast.arguments(\n                args=new_args,\n                vararg=node.args.vararg,\n                kwonlyargs=node.args.kwonlyargs,\n                kw_defaults=node.args.kw_defaults,\n                kwarg=node.args.kwarg,\n                defaults=node.args.defaults\n            ),\n            body=node.body,\n            decorator_list=node.decorator_list\n        )\n        return astor.to_source(new_node)\n    \n    def _flatten_js_nesting(self, nested_code: str) -> str:\n        \"\"\"Flatten JavaScript nested callbacks.\"\"\"\n        return \"\"\"async function processData() {\n    try {\n        // Use async/await to flatten the callback structure\n        const result1 = await step1();\n        const result2 = await step2(result1);\n        return await step3(result2);\n    } catch (error) {\n        console.error('Error:', error);\n    }\n}\"\"\"\n    \n    def _extract_js_duplicate_code(self, block: Tuple[str, ...]) -> str:\n        \"\"\"Extract duplicate JavaScript code into a reusable function.\"\"\"\n        return f\"\"\"function reusableFunction(params) {{\n    {chr(10).join('    ' + line for line in block)}\n}}\n\n// Call the function where needed\"\"\" "
+        },
+        "refactoring_suggestions.py": {
+            "smells": [
+                "Global Variables (Not in function/class): 2 - ['smell', 'details']"
+            ],
+            "metrics": {
+                "total_lines": 340,
+                "num_functions": 2,
+                "function_lengths": [
+                    3,
+                    5
+                ],
+                "num_prints": 0
+            },
+            "code": "\"\"\"\nThis module provides refactoring examples for different types of code smells.\nEach function returns concrete code examples showing how to refactor the problematic code.\n\"\"\"\n\ndef get_python_refactoring_examples(smell_type, details):\n    \"\"\"Returns concrete refactoring examples for Python code smells.\"\"\"\n    examples = {\n        \"high_complexity_functions\": lambda funcs: {\n            \"before\": \"\"\"def complex_function(data):\n    result = 0\n    for item in data:\n        if item > 10:\n            if isinstance(item, int):\n                if item % 2 == 0:\n                    result += item * 2\n                else:\n                    result += item\n            else:\n                try:\n                    num = float(item)\n                    result += num\n                except:\n                    pass\n    return result\"\"\",\n            \"after\": \"\"\"def is_valid_number(item):\n    return isinstance(item, (int, float)) or str(item).replace('.', '').isdigit()\n\ndef process_even_number(num):\n    return num * 2 if num % 2 == 0 else num\n\ndef process_item(item):\n    if not is_valid_number(item) or item <= 10:\n        return 0\n    try:\n        num = float(item) if isinstance(item, str) else item\n        return process_even_number(num) if isinstance(num, int) else num\n    except ValueError:\n        return 0\n\ndef refactored_function(data):\n    return sum(process_item(item) for item in data)\"\"\"\n        },\n\n        \"deeply_nested_functions\": lambda funcs: {\n            \"before\": \"\"\"def process_data(data):\n    results = []\n    for item in data:\n        if item.is_valid():\n            if item.type == 'user':\n                if item.age >= 18:\n                    if item.has_permission:\n                        results.append(item.process())\n    return results\"\"\",\n            \"after\": \"\"\"def meets_criteria(item):\n    return (item.is_valid() and \n            item.type == 'user' and \n            item.age >= 18 and \n            item.has_permission)\n\ndef process_data(data):\n    return [item.process() for item in data if meets_criteria(item)]\"\"\"\n        },\n\n        \"feature_envy\": lambda funcs: {\n            \"before\": \"\"\"class Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def calculate_discount(self):\n        if self.customer.loyalty_years > 5:\n            if self.customer.purchase_history > 1000:\n                return 0.2\n            return 0.1\n        return 0\"\"\",\n            \"after\": \"\"\"class Customer:\n    def __init__(self, loyalty_years, purchase_history):\n        self.loyalty_years = loyalty_years\n        self.purchase_history = purchase_history\n    \n    def calculate_discount(self):\n        if self.loyalty_years > 5:\n            return 0.2 if self.purchase_history > 1000 else 0.1\n        return 0\n\nclass Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def get_discount(self):\n        return self.customer.calculate_discount()\"\"\"\n        },\n\n        \"duplicate_code\": lambda funcs: {\n            \"before\": \"\"\"def process_users(users):\n    for user in users:\n        name = user.get('name', '').strip()\n        email = user.get('email', '').strip()\n        if name and '@' in email:\n            save_to_db(name, email)\n\ndef process_customers(customers):\n    for customer in customers:\n        name = customer.get('name', '').strip()\n        email = customer.get('email', '').strip()\n        if name and '@' in email:\n            save_to_db(name, email)\"\"\",\n            \"after\": \"\"\"def is_valid_contact(name, email):\n    return bool(name.strip() and '@' in email)\n\ndef process_contacts(contacts):\n    for contact in contacts:\n        name = contact.get('name', '').strip()\n        email = contact.get('email', '').strip()\n        if is_valid_contact(name, email):\n            save_to_db(name, email)\n\ndef process_users(users):\n    process_contacts(users)\n\ndef process_customers(customers):\n    process_contacts(customers)\"\"\"\n        },\n\n        \"too_many_returns\": lambda funcs: {\n            \"before\": \"\"\"def check_user_access(user):\n    if not user:\n        return False\n    if not user.is_active:\n        return False\n    if user.is_banned:\n        return False\n    if not user.has_permission('access'):\n        return False\n    if user.login_attempts > 3:\n        return False\n    return True\"\"\",\n            \"after\": \"\"\"def check_user_access(user):\n    conditions = [\n        bool(user),\n        user.is_active,\n        not user.is_banned,\n        user.has_permission('access'),\n        user.login_attempts <= 3\n    ]\n    return all(conditions)\"\"\"\n        }\n    }\n    \n    return examples.get(smell_type, lambda x: {\"before\": \"No example available\", \"after\": \"No example available\"})(details)\n\ndef get_javascript_refactoring_examples(smell):\n    \"\"\"Returns concrete refactoring examples for JavaScript code smells.\"\"\"\n    parts = smell.split(\":\")\n    smell_type = parts[0].strip()\n    \n    examples = {\n        \"Global Variables Found\": {\n            \"before\": \"\"\"// script.js\nvar users = [];\nvar config = { apiUrl: 'https://api.example.com' };\n\nfunction addUser(user) {\n    users.push(user);\n}\n\nfunction getConfig() {\n    return config;\n}\"\"\",\n            \"after\": \"\"\"// users.js\nexport class UserManager {\n    constructor() {\n        this.users = [];\n    }\n    \n    addUser(user) {\n        this.users.push(user);\n    }\n}\n\n// config.js\nexport const config = {\n    apiUrl: 'https://api.example.com'\n};\n\n// main.js\nimport { UserManager } from './users';\nimport { config } from './config';\n\nconst userManager = new UserManager();\"\"\"\n        },\n\n        \"Unused Variables\": {\n            \"before\": \"\"\"function processData(data) {\n    let temp = data.map(x => x * 2);  // Unused variable\n    let result = data.filter(x => x > 10);\n    return result;\n}\"\"\",\n            \"after\": \"\"\"function processData(data) {\n    // Remove unused variable and directly return filtered result\n    return data.filter(x => x > 10);\n}\"\"\"\n        },\n\n        \"Deep Nesting\": {\n            \"before\": \"\"\"function processUserData(user) {\n    if (user) {\n        if (user.address) {\n            if (user.address.shipping) {\n                if (user.address.shipping.zipCode) {\n                    return validateZipCode(user.address.shipping.zipCode);\n                }\n            }\n        }\n    }\n    return false;\n}\"\"\",\n            \"after\": \"\"\"function processUserData(user) {\n    if (!user?.address?.shipping?.zipCode) {\n        return false;\n    }\n    return validateZipCode(user.address.shipping.zipCode);\n}\"\"\"\n        },\n\n        \"Magic Numbers Found\": {\n            \"before\": \"\"\"function calculatePrice(quantity) {\n    if (quantity > 10) {\n        return quantity * 5.99 * 0.9;\n    }\n    return quantity * 5.99;\n}\n\nsetTimeout(checkStatus, 300000);\"\"\",\n            \"after\": \"\"\"const PRICES = {\n    UNIT_PRICE: 5.99,\n    BULK_DISCOUNT: 0.9,\n    BULK_THRESHOLD: 10\n};\n\nconst TIMEOUTS = {\n    STATUS_CHECK: 5 * 60 * 1000 // 5 minutes in milliseconds\n};\n\nfunction calculatePrice(quantity) {\n    const basePrice = quantity * PRICES.UNIT_PRICE;\n    return quantity > PRICES.BULK_THRESHOLD \n        ? basePrice * PRICES.BULK_DISCOUNT \n        : basePrice;\n}\n\nsetTimeout(checkStatus, TIMEOUTS.STATUS_CHECK);\"\"\"\n        },\n\n        \"Callback Hell\": {\n            \"before\": \"\"\"getData(function(a) {\n    getMoreData(a, function(b) {\n        getMoreData(b, function(c) {\n            getMoreData(c, function(d) {\n                getMoreData(d, function(e) {\n                    console.log(e);\n                });\n            });\n        });\n    });\n});\"\"\",\n            \"after\": \"\"\"// Using async/await\nasync function getAllData() {\n    try {\n        const a = await getData();\n        const b = await getMoreData(a);\n        const c = await getMoreData(b);\n        const d = await getMoreData(c);\n        const e = await getMoreData(d);\n        return e;\n    } catch (error) {\n        console.error('Error fetching data:', error);\n        throw error;\n    }\n}\n\n// Or using Promise chaining\ngetData()\n    .then(a => getMoreData(a))\n    .then(b => getMoreData(b))\n    .then(c => getMoreData(c))\n    .then(d => getMoreData(d))\n    .then(e => console.log(e))\n    .catch(error => console.error('Error:', error));\"\"\"\n        },\n\n        \"Duplicate Code Blocks\": {\n            \"before\": \"\"\"function validateUser(user) {\n    if (!user.name || user.name.length < 2) {\n        throw new Error('Invalid name');\n    }\n    if (!user.email || !user.email.includes('@')) {\n        throw new Error('Invalid email');\n    }\n    return true;\n}\n\nfunction validateCustomer(customer) {\n    if (!customer.name || customer.name.length < 2) {\n        throw new Error('Invalid name');\n    }\n    if (!customer.email || !customer.email.includes('@')) {\n        throw new Error('Invalid email');\n    }\n    return true;\n}\"\"\",\n            \"after\": \"\"\"const validations = {\n    name: (name) => {\n        if (!name || name.length < 2) {\n            throw new Error('Invalid name');\n        }\n    },\n    email: (email) => {\n        if (!email || !email.includes('@')) {\n            throw new Error('Invalid email');\n        }\n    }\n};\n\nfunction validateContact(contact) {\n    validations.name(contact.name);\n    validations.email(contact.email);\n    return true;\n}\n\nconst validateUser = validateContact;\nconst validateCustomer = validateContact;\"\"\"\n        }\n    }\n    \n    return examples.get(smell_type, {\n        \"before\": \"No example available\",\n        \"after\": \"No example available\"\n    })\n\n"
+        },
+        "server.py": {
+            "smells": [
+                "Feature Envy (>5 external calls): 2 - ['analyze(7)', 'refactor_code_llm(11)']",
+                "Data Clumps (Repeated params): 1 sets - [[]]",
+                "Global Variables (Not in function/class): 26 - ['jsonify', 'response_text', 're', 'smell', 'traceback', 'extract_code_from_response', 'open', 'file', 'ChatGroq', 'analyze_repo', 'print', 'e', 'hasattr', '__name__', 'load_dotenv', 'os', 'details', 'HumanMessage', 'Exception', 'Flask', 'str', 'i', 'request', 'path', 'enumerate', 'CORS']"
+            ],
+            "metrics": {
+                "total_lines": 103,
+                "num_functions": 3,
+                "function_lengths": [
+                    1,
+                    4,
+                    5
+                ],
+                "num_prints": 2
+            },
+            "code": "from flask import Flask, request, jsonify\nfrom flask_cors import CORS\nfrom detector.app import analyze_repo\nimport traceback\nfrom dotenv import load_dotenv\nimport os\nfrom langchain_groq import ChatGroq\nfrom langchain.schema import HumanMessage\nimport re\n\nload_dotenv()  # loads .env file\nllm = ChatGroq(\n    temperature=0.6,\n    max_tokens=4096,\n    groq_api_key=os.getenv(\"GROQ_API_KEY\"),  # Fetch API key securely from environment\n    model_name=\"deepseek-r1-distill-llama-70b\"  # Model name for ChatGroq\n)\n\napp = Flask(__name__)\nCORS(app, resources={r\"/analyze\": {\"origins\": \"*\"}})\nCORS(app, resources={r\"/refactor_code_llm\": {\"origins\": \"http://127.0.0.1:3000\"}})\napp.config['JSONIFY_PRETTYPRINT_REGULAR'] = False\napp.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024\n\n@app.route(\"/analyze\", methods=[\"POST\"])\ndef analyze():\n    try:\n        data = request.get_json()\n        repo_url = data.get(\"repo_url\")\n        if not repo_url:\n            return jsonify({\"error\": \"Missing 'repo_url' in request body\"}), 400\n\n        results = analyze_repo(repo_url)\n\n        # Transform results to include just the file names as keys\n        transformed = {\n            \"python\": {\n                os.path.basename(path): details \n                for path, details in results[\"python\"].items()\n            },\n            \"javascript\": {\n                os.path.basename(path): details\n                for path, details in results[\"javascript\"].items()\n            },\n            \"metadata\": results.get(\"metadata\", {})\n        }\n\n        return jsonify(transformed)\n\n    except Exception as e:\n        print(f\"[SERVER ERROR] {traceback.format_exc()}\")  # Optional: log full traceback\n        return jsonify({\"error\": f\"Backend error: {str(e)}\"}), 500\n\ndef extract_code_from_response(response_text):\n    \"\"\"\n    Extracts the first code block from the LLM response.\n    Assumes code is enclosed in triple backticks.\n    \"\"\"\n    code_blocks = re.findall(r\"```(?:\\w*\\n)?(.*?)```\", response_text, re.DOTALL)\n    if code_blocks:\n        return code_blocks[0].strip()\n    return response_text.strip()\n\n@app.route('/refactor_code_llm', methods=['POST'])\ndef refactor_code_llm():\n    data = request.get_json()\n    input_code = data.get(\"code\", \"\")\n    input_smells = data.get(\"fileSmells\", [])\n\n    # print(input_smells)\n\n    if not input_code.strip():\n        return jsonify({\"error\": \"No code provided\"}), 400\n\n    try:\n        # Read the prompt from the file\n        with open(\"refactor.txt\", \"r\") as file:\n            prompt_template = file.read()\n\n        smell_text = \"\\n\".join([f\"{i+1}. {smell}\" for i, smell in enumerate(input_smells)])\n\n        # Replace placeholders\n        prompt = (\n            prompt_template\n            .replace(\"{input_code}\", input_code)\n            .replace(\"{smells}\", smell_text)\n        )\n        \n        prompt = prompt.replace(\"{input_code}\", input_code)\n\n        # Extract the refactored code from the response\n        response = llm.invoke([HumanMessage(content=prompt)])\n        full_response = response.content if hasattr(response, 'content') else str(response)\n        refactored_code = extract_code_from_response(full_response)\n        return jsonify({\"refactored_code\": refactored_code})\n\n    except Exception as e:\n        # Log the full traceback for debugging purposes\n        print(f\"Error: {traceback.format_exc()}\")\n        return jsonify({\"error\": str(e)}), 500\n\nif __name__ == \"__main__\":\n    app.run(port=5000, debug=True, host='0.0.0.0')"
+        },
         "app.py": {
-            "high_complexity_functions": {
-                "details": [
-                    "excelColnoToColNo"
+            "smells": [
+                "High Complexity Functions (>10): 1 - ['analyze_repo(12)']",
+                "Feature Envy (>5 external calls): 1 - ['analyze_repo(12)']",
+                "Data Clumps (Repeated params): 1 sets - [['repo_url']]",
+                "Shotgun Surgery (Function called >10 times): 1 - [('print', 22)]",
+                "Global Variables (Not in function/class): 31 - ['key', 'stat', 'analyze_py_code', 'smell', 'shutil', 'len', 'git', 'clone_github_repo', 'open', 'file', 'analyze_repo', 'print', 'json_file', 'ValueError', 'e', 'analyze_js_code', 'smells', 'value', '__name__', 'data', 'input', 'os', 'json', 'Exception', 'tempfile', 'metrics', 'str', 'filename', 'path', 'Path', 'list']"
+            ],
+            "metrics": {
+                "total_lines": 118,
+                "num_functions": 2,
+                "function_lengths": [
+                    5,
+                    20
                 ],
-                "refactoring_example": {
-                    "before": "def complex_function(data):\n    result = 0\n    for item in data:\n        if item > 10:\n            if isinstance(item, int):\n                if item % 2 == 0:\n                    result += item * 2\n                else:\n                    result += item\n            else:\n                try:\n                    num = float(item)\n                    result += num\n                except:\n                    pass\n    return result",
-                    "after": "def is_valid_number(item):\n    return isinstance(item, (int, float)) or str(item).replace('.', '').isdigit()\n\ndef process_even_number(num):\n    return num * 2 if num % 2 == 0 else num\n\ndef process_item(item):\n    if not is_valid_number(item) or item <= 10:\n        return 0\n    try:\n        num = float(item) if isinstance(item, str) else item\n        return process_even_number(num) if isinstance(num, int) else num\n    except ValueError:\n        return 0\n\ndef refactored_function(data):\n    return sum(process_item(item) for item in data)"
-                }
+                "num_prints": 22
             },
-            "deeply_nested_functions": {
-                "details": [
-                    "refactor_special_missing_values_endpoint",
-                    "refactor_missing_values_endpoint",
-                    "excelColnoToColNo"
-                ],
-                "refactoring_example": {
-                    "before": "def process_data(data):\n    results = []\n    for item in data:\n        if item.is_valid():\n            if item.type == 'user':\n                if item.age >= 18:\n                    if item.has_permission:\n                        results.append(item.process())\n    return results",
-                    "after": "def meets_criteria(item):\n    return (item.is_valid() and \n            item.type == 'user' and \n            item.age >= 18 and \n            item.has_permission)\n\ndef process_data(data):\n    return [item.process() for item in data if meets_criteria(item)]"
-                }
-            },
-            "too_many_returns": {
-                "details": [
-                    "excelColnoToColNo"
-                ],
-                "refactoring_example": {
-                    "before": "def check_user_access(user):\n    if not user:\n        return False\n    if not user.is_active:\n        return False\n    if user.is_banned:\n        return False\n    if not user.has_permission('access'):\n        return False\n    if user.login_attempts > 3:\n        return False\n    return True",
-                    "after": "def check_user_access(user):\n    conditions = [\n        bool(user),\n        user.is_active,\n        not user.is_banned,\n        user.has_permission('access'),\n        user.login_attempts <= 3\n    ]\n    return all(conditions)"
-                }
-            },
-            "feature_envy": {
-                "details": [
-                    "regularExp"
-                ],
-                "refactoring_example": {
-                    "before": "class Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def calculate_discount(self):\n        if self.customer.loyalty_years > 5:\n            if self.customer.purchase_history > 1000:\n                return 0.2\n            return 0.1\n        return 0",
-                    "after": "class Customer:\n    def __init__(self, loyalty_years, purchase_history):\n        self.loyalty_years = loyalty_years\n        self.purchase_history = purchase_history\n    \n    def calculate_discount(self):\n        if self.loyalty_years > 5:\n            return 0.2 if self.purchase_history > 1000 else 0.1\n        return 0\n\nclass Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def get_discount(self):\n        return self.customer.calculate_discount()"
-                }
-            },
-            "data_clumps": {
-                "details": [
-                    []
-                ],
-                "refactoring_example": {
-                    "before": "No example available",
-                    "after": "No example available"
-                }
-            },
-            "shotgun_surgery": {
-                "details": [
-                    "len",
-                    "jsonify"
-                ],
-                "refactoring_example": {
-                    "before": "No example available",
-                    "after": "No example available"
-                }
-            }
+            "code": "import os\nimport shutil\nimport git\nimport tempfile\nimport stat\nimport json\nfrom pathlib import Path\nfrom detector.py_analyzer import analyze_py_code\nfrom detector.js_analyzer import analyze_js_code\nfrom refactor.py_refactor import refactor_python_code\nfrom refactor.js_refactor import refactor_js_code\n\nREPO_DIR = \"temp_repo\"\n\ndef clone_github_repo(repo_url):\n    temp_dir = tempfile.mkdtemp()\n    print(f\"[+] Cloning repo into {temp_dir} ...\")\n    try:\n        git.Repo.clone_from(repo_url, temp_dir)\n    except Exception as e:\n        print(f\"[-] Error cloning repo: {str(e)}\")\n        return None\n    print(\"[+] Clone complete.\")\n    return temp_dir\n\ndef analyze_repo(repo_url):\n    repo_path = clone_github_repo(repo_url)\n    if not repo_path:\n        raise ValueError(f\"Failed to clone repository: {repo_url}\")\n\n    python_files = list(Path(repo_path).rglob(\"*.py\"))\n    js_files = list(Path(repo_path).rglob(\"*.js\"))\n    \n    print(f\"[+] {len(python_files)} Python files found.\")\n    print(f\"[+] {len(js_files)} JavaScript files found.\")\n    \n    report = {}\n    for file in python_files:\n        try:\n            smells, metrics = analyze_py_code(file)\n            report[file.name] = {\n                \"smells\": smells,\n                \"metrics\": metrics,\n                \"code\": file.read_text(encoding=\"utf-8\", errors=\"ignore\")\n            }\n        except Exception as e:\n            print(f\"[-] Error analyzing Python file {file.name}: {str(e)}\")\n\n    smell_report = {}\n    for file in js_files:\n        try:\n            smells, metrics = analyze_js_code(file)\n            smell_report[file.name] = {\n                \"smells\": smells,\n                \"metrics\": metrics,\n                \"code\": file.read_text(encoding=\"utf-8\", errors=\"ignore\")\n            }\n        except Exception as e:\n            print(f\"[-] Error analyzing JS file {file.name}: {str(e)}\")\n\n    # Clean up temp repo\n    shutil.rmtree(repo_path, onerror=lambda _, path, __: os.chmod(path, stat.S_IWRITE))\n\n    combined_report = {\n        \"python\": report,\n        \"javascript\": smell_report\n    }\n\n    # Save report to JSON\n    output_file = \"code_smells_report.json\"\n    with open(output_file, \"w\", encoding=\"utf-8\") as json_file:\n        json.dump(combined_report, json_file, indent=4)\n    \n    print(f\"\\n[+] Code smells report saved to {output_file}\")\n\n    # Print results to console\n    print(\"\\n[Python Code Smells]\")\n    for filename, data in report.items():\n        print(f\"\\nFile: {filename}\")\n        print(\"Detected Smells:\")\n        for smell in data[\"smells\"]:\n            print(f\"  - {smell}\")\n        print(\"Metrics:\")\n        for key, value in data[\"metrics\"].items():\n            print(f\"  {key}: {value}\")\n        # print(\"Code:\")\n        # print(data[\"code\"])\n\n    print(\"\\n[JavaScript Code Smells]\")\n    for filename, data in smell_report.items():\n        print(\"\\n==========\")\n        print(f\"File: {filename}\")\n        print(\"Detected Smells:\")\n        for smell in data[\"smells\"]:\n            print(f\"  - {smell}\")\n        print(\"Metrics:\")\n        for key, value in data[\"metrics\"].items():\n            print(f\"  {key}: {value}\")\n        # print(\"Code:\")\n        # print(data[\"code\"])\n\n    return {\n        \"python\": report,\n        \"javascript\": smell_report,\n        \"metadata\": {\n            \"python_files\": len(python_files),\n            \"js_files\": len(js_files),\n            \"repo\": repo_url\n        }\n    }\n\n\nif __name__ == \"__main__\":\n    repo_url = input(\"Enter GitHub repository URL: \").strip()\n    try:\n        analyze_repo(repo_url)\n    except Exception as e:\n        print(f\"[-] Failed to analyze repo: {e}\")"
         },
-        "correlated.py": {
-            "deeply_nested_functions": {
-                "details": [
-                    "correlated"
+        "js_analyzer.py": {
+            "smells": [
+                "High Complexity Functions (>10): 1 - ['analyze_js_code(47)']",
+                "Deeply Nested Functions (>3): 1 - ['analyze_js_code(6)']",
+                "Feature Envy (>5 external calls): 1 - ['analyze_js_code(46)']",
+                "Shotgun Surgery (Function called >10 times): 1 - [('len', 20)]",
+                "Global Variables (Not in function/class): 20 - ['count', 'defaultdict', 're', 'p', 'var', 'len', 'set', 'open', 'line', 'tuple', 'match', 'all', 'num', 'file_path', 'max', 'range', 'f', 'int', 'i', 'list']"
+            ],
+            "metrics": {
+                "total_lines": 144,
+                "num_functions": 1,
+                "function_lengths": [
+                    45
                 ],
-                "refactoring_example": {
-                    "before": "def process_data(data):\n    results = []\n    for item in data:\n        if item.is_valid():\n            if item.type == 'user':\n                if item.age >= 18:\n                    if item.has_permission:\n                        results.append(item.process())\n    return results",
-                    "after": "def meets_criteria(item):\n    return (item.is_valid() and \n            item.type == 'user' and \n            item.age >= 18 and \n            item.has_permission)\n\ndef process_data(data):\n    return [item.process() for item in data if meets_criteria(item)]"
-                }
+                "num_prints": 0
             },
-            "feature_envy": {
-                "details": [
-                    "generate_heatmap",
-                    "correlated"
-                ],
-                "refactoring_example": {
-                    "before": "class Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def calculate_discount(self):\n        if self.customer.loyalty_years > 5:\n            if self.customer.purchase_history > 1000:\n                return 0.2\n            return 0.1\n        return 0",
-                    "after": "class Customer:\n    def __init__(self, loyalty_years, purchase_history):\n        self.loyalty_years = loyalty_years\n        self.purchase_history = purchase_history\n    \n    def calculate_discount(self):\n        if self.loyalty_years > 5:\n            return 0.2 if self.purchase_history > 1000 else 0.1\n        return 0\n\nclass Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def get_discount(self):\n        return self.customer.calculate_discount()"
-                }
-            },
-            "data_clumps": {
-                "details": [
-                    [
-                        "df"
-                    ]
-                ],
-                "refactoring_example": {
-                    "before": "No example available",
-                    "after": "No example available"
-                }
-            }
+            "code": "import re\nfrom collections import defaultdict\n\ndef analyze_js_code(file_path):\n    smells = []\n    function_details = []\n    global_variables = []\n\n    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:\n        code = f.read()\n\n    lines = code.splitlines()\n    num_lines = len(lines)\n\n    # --- Global Variables ---\n    var_decls = re.findall(r'(?:var|let|const)\\s+(\\w+)', code)\n    for var in var_decls:\n        if re.findall(rf'\\b{re.escape(var)}\\b', code) == [var]:\n            global_variables.append(var)\n    if global_variables:\n        smells.append(f\"Global Variables Found: {len(global_variables)} variables\")\n\n    # --- Long Function & Too Many Parameters ---\n    function_defs = re.finditer(r'function\\s+\\w*\\s*\\((.*?)\\)\\s*\\{', code, re.DOTALL)\n    for match in function_defs:\n        start = match.start()\n        params = match.group(1).split(',')\n        param_count = len([p.strip() for p in params if p.strip()])\n        if param_count > 4:\n            smells.append(f\"Too Many Parameters (>4): {param_count} parameters\")\n\n        open_braces = 0\n        end = start\n        for i in range(start, len(code)):\n            if code[i] == '{':\n                open_braces += 1\n            elif code[i] == '}':\n                open_braces -= 1\n                if open_braces == 0:\n                    end = i\n                    break\n        func_code = code[start:end]\n        func_lines = func_code.count('\\n') + 1\n        function_details.append(func_lines)\n        if func_lines > 50:\n            smells.append(f\"Long Function (>50 lines): {func_lines} lines\")\n\n    # --- Large File ---\n    if num_lines > 300:\n        smells.append(f\"Large File (>300 lines): {num_lines} lines\")\n\n    # --- Console Log Overuse ---\n    console_logs = re.findall(r'\\bconsole\\.log\\b', code)\n    if len(console_logs) >= 10:\n        smells.append(f\"Console Log Overuse (\u226510 logs): {len(console_logs)} logs\")\n\n    # --- Deep Nesting ---\n    nesting_level = 0\n    max_nesting = 0\n    for line in lines:\n        nesting_level += line.count('{') - line.count('}')\n        max_nesting = max(max_nesting, nesting_level)\n    if max_nesting >= 4:\n        smells.append(f\"Deep Nesting (>=4 levels): {max_nesting} levels\")\n\n    # --- Magic Numbers ---\n    magic_numbers = re.findall(r'[^a-zA-Z](\\d+)[^a-zA-Z]', code)\n    magic_numbers = [num for num in magic_numbers if num not in ['0', '1']]\n    if magic_numbers:\n        smells.append(f\"Magic Numbers Found: {len(magic_numbers)} occurrences\")\n\n    # --- Duplicate Code Blocks (3+ lines repeated) ---\n    block_counts = defaultdict(int)\n    for i in range(len(lines) - 2):\n        block = tuple(lines[i:i+3])\n        if all(line.strip() for line in block):  # non-empty lines\n            block_counts[block] += 1\n    duplicate_blocks = [block for block, count in block_counts.items() if count > 1]\n    if duplicate_blocks:\n        smells.append(f\"Duplicate Code Blocks: {len(duplicate_blocks)} blocks repeated\")\n\n    # --- Unused Variables ---\n    unused_vars = []\n    for var in var_decls:\n        if len(re.findall(r'\\b' + re.escape(var) + r'\\b', code)) == 1:\n            unused_vars.append(var)\n    if unused_vars:\n        smells.append(f\"Unused Variables: {len(unused_vars)} variables\")\n\n    # --- Long Chained Calls ---\n    long_chains = re.findall(r'\\w+(?:\\.\\w+){3,}', code)\n    if long_chains:\n        smells.append(f\"Long Chained Calls Found: {len(long_chains)} chains\")\n\n    # --- Inconsistent Naming ---\n    snake_case = set(re.findall(r'\\b[a-z]+(?:_[a-z]+)+\\b', code))\n    camel_case = set(re.findall(r'\\b[a-z]+(?:[A-Z][a-zA-Z0-9]*)+\\b', code))\n    if snake_case and camel_case:\n        smells.append(f\"Inconsistent Naming Found: Mixed camelCase and snake_case ({len(snake_case)} snake, {len(camel_case)} camel)\")\n\n    # --- Callback Hell (4+ nested function definitions) ---\n    nested_callback_depth = 0\n    max_callback_depth = 0\n    for line in lines:\n        if re.search(r'function\\s*\\(', line) and '=>' not in line:\n            nested_callback_depth += 1\n            max_callback_depth = max(max_callback_depth, nested_callback_depth)\n        if '}' in line:\n            nested_callback_depth = max(0, nested_callback_depth - 1)\n    if max_callback_depth >= 4:\n        smells.append(f\"Callback Hell Detected: {max_callback_depth} nested functions\")\n\n    # --- Low Comment Density ---\n    comments = [line for line in lines if line.strip().startswith('//') or '/*' in line or '*/' in line]\n    comment_ratio = len(comments) / num_lines if num_lines else 0\n    if comment_ratio < 0.02:\n        smells.append(f\"Low Comment Density (<2%): {len(comments)} comments\")\n\n    # --- Empty Catch Blocks ---\n    empty_catches = re.findall(r'catch\\s*\\(.*?\\)\\s*\\{\\s*\\}', code, re.DOTALL)\n    if empty_catches:\n        smells.append(f\"Empty Catch Blocks Found: {len(empty_catches)} blocks\")\n\n    # --- Unnecessary Semicolons ---\n    unnecessary_semis = [line for line in lines if line.strip() == ';']\n    if unnecessary_semis:\n        smells.append(f\"Unnecessary Semicolons: {len(unnecessary_semis)} found\")\n\n    return list(set(smells)), {\n        'total_lines': num_lines,\n        'num_console_logs': len(console_logs),\n        'num_functions': len(function_details),\n        'function_lengths': function_details,\n        'max_nesting_level': max_nesting,\n    }\n\n# if __name__ == \"__main__\":\n#     smells, metrics = analyze_js_code(\"sample.js\")\n#     print(\"Detected Smells:\")\n#     for smell in smells:\n#         print(\"-\", smell)\n#     print(\"\\nCode Metrics:\")\n#     for key, value in metrics.items():\n#         print(f\"{key}: {value}\")"
         },
-        "duplicates.py": {
-            "feature_envy": {
-                "details": [
-                    "duplicated"
+        "py_analyzer.py": {
+            "smells": [
+                "High Complexity Functions (>10): 1 - ['analyze_py_code(90)']",
+                "Deeply Nested Functions (>3): 1 - ['analyze_py_code(5)']",
+                "Feature Envy (>5 external calls): 2 - ['analyze_py_code(118)', 'get_nesting_depth(6)']",
+                "Shotgun Surgery (Function called >10 times): 2 - [('isinstance', 28), ('len', 23)]",
+                "Global Variables (Not in function/class): 39 - ['count', 'node', 'defaultdict', 'sum', 'name', 'ast', 'c', 'handler', 'l', 'isinstance', 'p', 'n', 'len', 'set', 'open', 'tuple', 'func', 'analyze', 'child', 'd', 'file_path', 'max', 'count_return_statements', 'getattr', 'any', 'funcs', 'f', 'm', 'depth', 'int', 'get_nesting_depth', 'map', 'cc_visit', 'stmt', 'h_visit', 'arg', 'target', 'mi_visit', 'list']"
+            ],
+            "metrics": {
+                "total_lines": 149,
+                "num_functions": 3,
+                "function_lengths": [
+                    55,
+                    4,
+                    1
                 ],
-                "refactoring_example": {
-                    "before": "class Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def calculate_discount(self):\n        if self.customer.loyalty_years > 5:\n            if self.customer.purchase_history > 1000:\n                return 0.2\n            return 0.1\n        return 0",
-                    "after": "class Customer:\n    def __init__(self, loyalty_years, purchase_history):\n        self.loyalty_years = loyalty_years\n        self.purchase_history = purchase_history\n    \n    def calculate_discount(self):\n        if self.loyalty_years > 5:\n            return 0.2 if self.purchase_history > 1000 else 0.1\n        return 0\n\nclass Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def get_discount(self):\n        return self.customer.calculate_discount()"
-                }
-            }
+                "num_prints": 0
+            },
+            "code": "import ast\nfrom radon.complexity import cc_visit\nfrom radon.metrics import h_visit, mi_visit\nfrom radon.raw import analyze\nfrom collections import defaultdict\n\ndef analyze_py_code(file_path):\n    smells = []\n    metrics = {}\n\n    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:\n        code = f.read()\n\n    complexity_results = cc_visit(code)\n    high_complexity = [(func.name, func.complexity) for func in complexity_results if func.complexity > 10]\n    if high_complexity:\n        smells.append(f\"High Complexity Functions (>10): {len(high_complexity)} - {[f'{n}({c})' for n, c in high_complexity]}\")\n\n    halstead_metrics = h_visit(code)\n    maintainability_index = mi_visit(code, halstead_metrics)\n    if maintainability_index < 20:\n        smells.append(f\"Low Maintainability Index (<20): {maintainability_index:.2f}\")\n\n    raw_metrics = analyze(code)\n    metrics[\"total_lines\"] = raw_metrics.loc\n    if raw_metrics.loc > 500:\n        smells.append(f\"Large File (>500 lines): {raw_metrics.loc} lines\")\n\n    tree = ast.parse(code)\n\n    def get_nesting_depth(node, depth=0):\n        if isinstance(node, (ast.If, ast.For, ast.While, ast.With, ast.FunctionDef)):\n            depth += 1\n        max_depth = depth\n        for child in ast.iter_child_nodes(node):\n            max_depth = max(max_depth, get_nesting_depth(child, depth))\n        return max_depth\n\n    deeply_nested = [(node.name, get_nesting_depth(node)) for node in ast.walk(tree)\n                     if isinstance(node, ast.FunctionDef) and get_nesting_depth(node) > 3]\n    if deeply_nested:\n        smells.append(f\"Deeply Nested Functions (>3): {len(deeply_nested)} - {[f'{n}({d})' for n, d in deeply_nested]}\")\n\n    large_funcs = [(node.name, len(node.body)) for node in ast.walk(tree)\n                   if isinstance(node, ast.FunctionDef) and len(node.body) > 100]\n    if large_funcs:\n        smells.append(f\"Large Functions (>100 lines): {len(large_funcs)} - {[f'{n}({l})' for n, l in large_funcs]}\")\n\n    feature_envy = []\n    for node in ast.walk(tree):\n        if isinstance(node, ast.FunctionDef):\n            calls = [n for n in ast.walk(node) if isinstance(n, ast.Attribute)]\n            external = [n for n in calls if isinstance(n.value, ast.Name)]\n            if len(external) > 5:\n                feature_envy.append((node.name, len(external)))\n    if feature_envy:\n        smells.append(f\"Feature Envy (>5 external calls): {len(feature_envy)} - {[f'{n}({c})' for n, c in feature_envy]}\")\n\n    function_params = []\n    for node in ast.walk(tree):\n        if isinstance(node, ast.FunctionDef):\n            params = tuple(arg.arg for arg in node.args.args)\n            function_params.append(params)\n    repeated_params = {p for p in function_params if function_params.count(p) > 1}\n    if repeated_params:\n        smells.append(f\"Data Clumps (Repeated params): {len(repeated_params)} sets - {list(map(list, repeated_params))}\")\n\n    assigned_vars = set()\n    used_vars = set()\n    for node in ast.walk(tree):\n        if isinstance(node, ast.Assign):\n            for target in node.targets:\n                if isinstance(target, ast.Name):\n                    assigned_vars.add(target.id)\n        elif isinstance(node, ast.Name):\n            used_vars.add(node.id)\n    dead_vars = assigned_vars - used_vars\n    if dead_vars:\n        smells.append(f\"Dead Code Variables (Unused): {len(dead_vars)} - {list(dead_vars)}\")\n\n    function_calls = defaultdict(int)\n    for node in ast.walk(tree):\n        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):\n            function_calls[node.func.id] += 1\n    frequent_calls = [(name, count) for name, count in function_calls.items() if count > 10]\n    if frequent_calls:\n        smells.append(f\"Shotgun Surgery (Function called >10 times): {len(frequent_calls)} - {frequent_calls}\")\n\n    long_lambdas = [node.lineno for node in ast.walk(tree)\n                    if isinstance(node, ast.Lambda) and isinstance(node.body, (ast.List, ast.Tuple)) and len(node.body.elts) > 3]\n    if long_lambdas:\n        smells.append(f\"Long Lambdas (>3 elements): {len(long_lambdas)} - lines {long_lambdas}\")\n\n    useless_exceptions = [node.lineno for node in ast.walk(tree)\n                          if isinstance(node, ast.Try) and any(\n                              isinstance(handler.body[0], ast.Pass) if handler.body else True for handler in node.handlers)]\n    if useless_exceptions:\n        smells.append(f\"Useless Exceptions (Try-Pass): {len(useless_exceptions)} - lines {useless_exceptions}\")\n\n    function_bodies = defaultdict(list)\n    for node in ast.walk(tree):\n        if isinstance(node, ast.FunctionDef):\n            body_str = \"\".join(ast.dump(stmt) for stmt in node.body)\n            function_bodies[body_str].append(node.name)\n    duplicates = [funcs for funcs in function_bodies.values() if len(funcs) > 1]\n    if duplicates:\n        smells.append(f\"Duplicate Code (Identical functions): {len(duplicates)} sets - {duplicates}\")\n\n    large_classes = [(node.name, sum(isinstance(n, ast.FunctionDef) for n in node.body))\n                     for node in ast.walk(tree) if isinstance(node, ast.ClassDef)\n                     and sum(isinstance(n, ast.FunctionDef) for n in node.body) > 10]\n    if large_classes:\n        smells.append(f\"Large Classes (>10 methods): {len(large_classes)} - {[f'{n}({m})' for n, m in large_classes]}\")\n\n    def count_return_statements(node):\n        return sum(1 for n in ast.walk(node) if isinstance(n, ast.Return))\n\n    many_returns = [(node.name, count_return_statements(node)) for node in ast.walk(tree)\n                    if isinstance(node, ast.FunctionDef) and count_return_statements(node) > 3]\n    if many_returns:\n        smells.append(f\"Too Many Returns (>3): {len(many_returns)} - {[f'{n}({c})' for n, c in many_returns]}\")\n\n    global_vars = [node.id for node in ast.walk(tree)\n                   if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load) and node.id not in assigned_vars]\n    if global_vars:\n        smells.append(f\"Global Variables (Not in function/class): {len(set(global_vars))} - {list(set(global_vars))}\")\n\n    too_many_args = [(node.name, len(node.args.args)) for node in ast.walk(tree)\n                     if isinstance(node, ast.FunctionDef) and len(node.args.args) > 5]\n    if too_many_args:\n        smells.append(f\"Too Many Parameters (>5): {len(too_many_args)} - {[f'{n}({c})' for n, c in too_many_args]}\")\n\n    # Extra Metrics\n    metrics[\"num_functions\"] = sum(1 for node in ast.walk(tree) if isinstance(node, ast.FunctionDef))\n    metrics[\"function_lengths\"] = [len(node.body) for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]\n    metrics[\"num_prints\"] = sum(1 for node in ast.walk(tree)\n                                if isinstance(node, ast.Call) and getattr(node.func, 'id', '') == 'print')\n\n    return smells, metrics\n\n\n# if __name__ == \"__main__\":\n#     smells, metrics = analyze_py_code(\"sample.py\")\n#     print(\"Detected Smells:\")\n#     for smell in smells:\n#         print(\"-\", smell)\n#     print(\"\\nCode Metrics:\")\n#     for key, value in metrics.items():\n#         print(f\"{key}: {value}\")\n"
         },
-        "imbalance.py": {
-            "high_complexity_functions": {
-                "details": [
-                    "generate_bargraph_class_imbal"
+        "py_refactor.py": {
+            "smells": [
+                "Deeply Nested Functions (>3): 4 - ['refactor_deeply_nested_functions(4)', 'refactor_too_many_returns(4)', 'refactor_useless_exceptions(4)', 'refactor_data_clumps(4)']",
+                "Feature Envy (>5 external calls): 19 - ['refactor_deeply_nested_functions(14)', 'refactor_too_many_returns(29)', 'refactor_long_lambdas(9)', 'refactor_duplicate_code(6)', 'refactor_large_classes(10)', 'refactor_high_complexity(10)', 'refactor_low_maintainability(10)', 'refactor_useless_exceptions(15)', 'refactor_dead_code_variables(7)', 'refactor_large_functions(16)', 'refactor_data_clumps(13)', 'visit_FunctionDef(6)', 'visit_FunctionDef(25)', 'visit_ClassDef(6)', 'visit_FunctionDef(7)', 'visit_BinOp(7)', 'visit_Try(11)', 'visit_FunctionDef(12)', 'visit_FunctionDef(9)']",
+                "Data Clumps (Repeated params): 2 sets - [['code', 'details'], ['self', 'node']]",
+                "Global Variables (Not in function/class): 56 - ['refactor_long_lambdas', 'node', 'refactor_shotgun_surgery', 'fn_name', 'refactor_low_maintainability', 'sum', 'ast', 're', 'loc', 'handler', 'isinstance', 'n', 'len', 'FunctionUnnester', 'CommentRemover', 'SplitLargeClass', 'LargeFunctionSplitter', 'textwrap', 'refactor_too_many_returns', 'ExceptionHandlerFixer', 'print', 'self', 'refactor_high_complexity', 'range', 'any', 'e', 'refactor_data_clumps', 'ComplexityReducer', 'fname', 'smells', 'refactor_excessive_comments', 'smell_type', 'ExpressionUnfolder', 'DeadCodeVariableRemover', 'refactor_feature_envy', 'refactor_large_functions', 'ReturnMerger', 'refactor_deeply_nested_functions', 'refactor_useless_exceptions', 'details', 'refactor_large_classes', 'dict', 'astor', 'refactor_large_file', 'DataClumpExtractor', 'refactor_dead_code_variables', 'Exception', 'str', 'refactor_duplicate_code', 'arg', 'next', 'i', 'a', 'hashlib', 'target', 'stmt']"
+            ],
+            "metrics": {
+                "total_lines": 299,
+                "num_functions": 27,
+                "function_lengths": [
+                    7,
+                    5,
+                    6,
+                    6,
+                    2,
+                    5,
+                    4,
+                    4,
+                    5,
+                    5,
+                    5,
+                    5,
+                    5,
+                    2,
+                    1,
+                    2,
+                    1,
+                    5,
+                    10,
+                    2,
+                    3,
+                    2,
+                    3,
+                    3,
+                    1,
+                    2,
+                    3
                 ],
-                "refactoring_example": {
-                    "before": "def complex_function(data):\n    result = 0\n    for item in data:\n        if item > 10:\n            if isinstance(item, int):\n                if item % 2 == 0:\n                    result += item * 2\n                else:\n                    result += item\n            else:\n                try:\n                    num = float(item)\n                    result += num\n                except:\n                    pass\n    return result",
-                    "after": "def is_valid_number(item):\n    return isinstance(item, (int, float)) or str(item).replace('.', '').isdigit()\n\ndef process_even_number(num):\n    return num * 2 if num % 2 == 0 else num\n\ndef process_item(item):\n    if not is_valid_number(item) or item <= 10:\n        return 0\n    try:\n        num = float(item) if isinstance(item, str) else item\n        return process_even_number(num) if isinstance(num, int) else num\n    except ValueError:\n        return 0\n\ndef refactored_function(data):\n    return sum(process_item(item) for item in data)"
-                }
+                "num_prints": 1
             },
-            "deeply_nested_functions": {
-                "details": [
-                    "binning_cat",
-                    "refactor_binning_cat",
-                    "class_imbal"
-                ],
-                "refactoring_example": {
-                    "before": "def process_data(data):\n    results = []\n    for item in data:\n        if item.is_valid():\n            if item.type == 'user':\n                if item.age >= 18:\n                    if item.has_permission:\n                        results.append(item.process())\n    return results",
-                    "after": "def meets_criteria(item):\n    return (item.is_valid() and \n            item.type == 'user' and \n            item.age >= 18 and \n            item.has_permission)\n\ndef process_data(data):\n    return [item.process() for item in data if meets_criteria(item)]"
-                }
-            },
-            "feature_envy": {
-                "details": [
-                    "class_imbal",
-                    "refactor_class_imbal",
-                    "generate_bargraph_class_imbal",
-                    "generate_bargraph_binning_cat"
-                ],
-                "refactoring_example": {
-                    "before": "class Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def calculate_discount(self):\n        if self.customer.loyalty_years > 5:\n            if self.customer.purchase_history > 1000:\n                return 0.2\n            return 0.1\n        return 0",
-                    "after": "class Customer:\n    def __init__(self, loyalty_years, purchase_history):\n        self.loyalty_years = loyalty_years\n        self.purchase_history = purchase_history\n    \n    def calculate_discount(self):\n        if self.loyalty_years > 5:\n            return 0.2 if self.purchase_history > 1000 else 0.1\n        return 0\n\nclass Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def get_discount(self):\n        return self.customer.calculate_discount()"
-                }
-            },
-            "data_clumps": {
-                "details": [
-                    [
-                        "df",
-                        "threshold"
-                    ],
-                    [
-                        "df"
-                    ]
-                ],
-                "refactoring_example": {
-                    "before": "No example available",
-                    "after": "No example available"
-                }
-            },
-            "shotgun_surgery": {
-                "details": [
-                    "len"
-                ],
-                "refactoring_example": {
-                    "before": "No example available",
-                    "after": "No example available"
-                }
-            }
-        },
-        "outliers.py": {
-            "deeply_nested_functions": {
-                "details": [
-                    "Outliers"
-                ],
-                "refactoring_example": {
-                    "before": "def process_data(data):\n    results = []\n    for item in data:\n        if item.is_valid():\n            if item.type == 'user':\n                if item.age >= 18:\n                    if item.has_permission:\n                        results.append(item.process())\n    return results",
-                    "after": "def meets_criteria(item):\n    return (item.is_valid() and \n            item.type == 'user' and \n            item.age >= 18 and \n            item.has_permission)\n\ndef process_data(data):\n    return [item.process() for item in data if meets_criteria(item)]"
-                }
-            },
-            "excessive_comments": {
-                "details": "40.37% comments",
-                "refactoring_example": {
-                    "before": "No example available",
-                    "after": "No example available"
-                }
-            },
-            "feature_envy": {
-                "details": [
-                    "generate_boxplot"
-                ],
-                "refactoring_example": {
-                    "before": "class Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def calculate_discount(self):\n        if self.customer.loyalty_years > 5:\n            if self.customer.purchase_history > 1000:\n                return 0.2\n            return 0.1\n        return 0",
-                    "after": "class Customer:\n    def __init__(self, loyalty_years, purchase_history):\n        self.loyalty_years = loyalty_years\n        self.purchase_history = purchase_history\n    \n    def calculate_discount(self):\n        if self.loyalty_years > 5:\n            return 0.2 if self.purchase_history > 1000 else 0.1\n        return 0\n\nclass Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def get_discount(self):\n        return self.customer.calculate_discount()"
-                }
-            },
-            "data_clumps": {
-                "details": [
-                    [
-                        "df"
-                    ]
-                ],
-                "refactoring_example": {
-                    "before": "No example available",
-                    "after": "No example available"
-                }
-            }
-        },
-        "sp_missingvalues.py": {
-            "high_complexity_functions": {
-                "details": [
-                    "SpecialMissingValues"
-                ],
-                "refactoring_example": {
-                    "before": "def complex_function(data):\n    result = 0\n    for item in data:\n        if item > 10:\n            if isinstance(item, int):\n                if item % 2 == 0:\n                    result += item * 2\n                else:\n                    result += item\n            else:\n                try:\n                    num = float(item)\n                    result += num\n                except:\n                    pass\n    return result",
-                    "after": "def is_valid_number(item):\n    return isinstance(item, (int, float)) or str(item).replace('.', '').isdigit()\n\ndef process_even_number(num):\n    return num * 2 if num % 2 == 0 else num\n\ndef process_item(item):\n    if not is_valid_number(item) or item <= 10:\n        return 0\n    try:\n        num = float(item) if isinstance(item, str) else item\n        return process_even_number(num) if isinstance(num, int) else num\n    except ValueError:\n        return 0\n\ndef refactored_function(data):\n    return sum(process_item(item) for item in data)"
-                }
-            },
-            "deeply_nested_functions": {
-                "details": [
-                    "SpecialMissingValues",
-                    "missing_values"
-                ],
-                "refactoring_example": {
-                    "before": "def process_data(data):\n    results = []\n    for item in data:\n        if item.is_valid():\n            if item.type == 'user':\n                if item.age >= 18:\n                    if item.has_permission:\n                        results.append(item.process())\n    return results",
-                    "after": "def meets_criteria(item):\n    return (item.is_valid() and \n            item.type == 'user' and \n            item.age >= 18 and \n            item.has_permission)\n\ndef process_data(data):\n    return [item.process() for item in data if meets_criteria(item)]"
-                }
-            },
-            "feature_envy": {
-                "details": [
-                    "generate_bargraph_special_missing_values",
-                    "generate_bargraph_nan_values",
-                    "SpecialMissingValues",
-                    "missing_values"
-                ],
-                "refactoring_example": {
-                    "before": "class Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def calculate_discount(self):\n        if self.customer.loyalty_years > 5:\n            if self.customer.purchase_history > 1000:\n                return 0.2\n            return 0.1\n        return 0",
-                    "after": "class Customer:\n    def __init__(self, loyalty_years, purchase_history):\n        self.loyalty_years = loyalty_years\n        self.purchase_history = purchase_history\n    \n    def calculate_discount(self):\n        if self.loyalty_years > 5:\n            return 0.2 if self.purchase_history > 1000 else 0.1\n        return 0\n\nclass Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def get_discount(self):\n        return self.customer.calculate_discount()"
-                }
-            },
-            "data_clumps": {
-                "details": [
-                    [
-                        "df"
-                    ]
-                ],
-                "refactoring_example": {
-                    "before": "No example available",
-                    "after": "No example available"
-                }
-            }
-        },
-        "stringsmells.py": {
-            "deeply_nested_functions": {
-                "details": [
-                    "detect_binary_missing_values",
-                    "detect_integer_as_string",
-                    "detect_special_characters",
-                    "refactor_special_char",
-                    "refactor_integer_as_string",
-                    "trailing_spaces",
-                    "human_friendly",
-                    "refactor_human_friendly"
-                ],
-                "refactoring_example": {
-                    "before": "def process_data(data):\n    results = []\n    for item in data:\n        if item.is_valid():\n            if item.type == 'user':\n                if item.age >= 18:\n                    if item.has_permission:\n                        results.append(item.process())\n    return results",
-                    "after": "def meets_criteria(item):\n    return (item.is_valid() and \n            item.type == 'user' and \n            item.age >= 18 and \n            item.has_permission)\n\ndef process_data(data):\n    return [item.process() for item in data if meets_criteria(item)]"
-                }
-            },
-            "too_many_returns": {
-                "details": [
-                    "detect_integer_as_string",
-                    "refactor_integer_as_string"
-                ],
-                "refactoring_example": {
-                    "before": "def check_user_access(user):\n    if not user:\n        return False\n    if not user.is_active:\n        return False\n    if user.is_banned:\n        return False\n    if not user.has_permission('access'):\n        return False\n    if user.login_attempts > 3:\n        return False\n    return True",
-                    "after": "def check_user_access(user):\n    conditions = [\n        bool(user),\n        user.is_active,\n        not user.is_banned,\n        user.has_permission('access'),\n        user.login_attempts <= 3\n    ]\n    return all(conditions)"
-                }
-            },
-            "feature_envy": {
-                "details": [
-                    "generate_bargraph_special_characters",
-                    "generate_bargraph_trailing_spaces",
-                    "generate_bargraph_human_friendly"
-                ],
-                "refactoring_example": {
-                    "before": "class Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def calculate_discount(self):\n        if self.customer.loyalty_years > 5:\n            if self.customer.purchase_history > 1000:\n                return 0.2\n            return 0.1\n        return 0",
-                    "after": "class Customer:\n    def __init__(self, loyalty_years, purchase_history):\n        self.loyalty_years = loyalty_years\n        self.purchase_history = purchase_history\n    \n    def calculate_discount(self):\n        if self.loyalty_years > 5:\n            return 0.2 if self.purchase_history > 1000 else 0.1\n        return 0\n\nclass Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def get_discount(self):\n        return self.customer.calculate_discount()"
-                }
-            },
-            "data_clumps": {
-                "details": [
-                    [
-                        "cell"
-                    ],
-                    [
-                        "df"
-                    ]
-                ],
-                "refactoring_example": {
-                    "before": "No example available",
-                    "after": "No example available"
-                }
-            },
-            "shotgun_surgery": {
-                "details": [
-                    "len"
-                ],
-                "refactoring_example": {
-                    "before": "No example available",
-                    "after": "No example available"
-                }
-            }
-        },
-        "ui.py": {
-            "excessive_comments": {
-                "details": "100.00% comments",
-                "refactoring_example": {
-                    "before": "No example available",
-                    "after": "No example available"
-                }
-            }
+            "code": "import ast\nimport astor\nimport textwrap\nfrom collections import defaultdict\nimport re\n\n\n# Refactor: Deeply Nested Functions\ndef refactor_deeply_nested_functions(code, details=None):\n    class FunctionUnnester(ast.NodeTransformer):\n        def __init__(self):\n            self.new_funcs = []\n\n        def visit_FunctionDef(self, node):\n            self.generic_visit(node)\n            new_body = []\n            for stmt in node.body:\n                if isinstance(stmt, ast.FunctionDef):\n                    self.new_funcs.append(stmt)\n                else:\n                    new_body.append(stmt)\n            node.body = new_body\n            return node\n\n    tree = ast.parse(code)\n    unnester = FunctionUnnester()\n    tree = unnester.visit(tree)\n    tree.body.extend(unnester.new_funcs)\n    ast.fix_missing_locations(tree)\n    return astor.to_source(tree)\n\n# Refactor: Too Many Returns\ndef refactor_too_many_returns(code, details=None):\n    class ReturnMerger(ast.NodeTransformer):\n        def visit_FunctionDef(self, node):\n            return_nodes = [n for n in ast.walk(node) if isinstance(n, ast.Return)]\n            if len(return_nodes) <= 1:\n                return node\n\n            var = ast.Name(id='__result', ctx=ast.Store())\n            assign_init = ast.Assign(targets=[var], value=ast.Constant(value=None))\n            new_body = [assign_init]\n            for stmt in node.body:\n                if isinstance(stmt, ast.Return):\n                    new_body.append(\n                        ast.Assign(\n                            targets=[ast.Name(id=\"__result\", ctx=ast.Store())],\n                            value=stmt.value if stmt.value else ast.Constant(value=None)\n                        )\n                    )\n                    new_body.append(ast.Break())\n                else:\n                    new_body.append(stmt)\n\n            new_func_body = [ast.While(test=ast.Constant(value=True), body=new_body, orelse=[])]\n            new_func_body.append(ast.Return(value=ast.Name(id=\"__result\", ctx=ast.Load())))\n            node.body = new_func_body\n            return node\n\n    tree = ast.parse(code)\n    tree = ReturnMerger().visit(tree)\n    ast.fix_missing_locations(tree)\n    return astor.to_source(tree)\n\n\n# Refactor: Long Lambdas\ndef refactor_long_lambdas(code, details=None):\n    import re\n    lines = code.split('\\n')\n    output = []\n    counter = 0\n    for line in lines:\n        if 'lambda' in line and len(line) > 80:\n            name = f'lambda_func_{counter}'\n            args_match = re.search(r'lambda\\s+(.*?):', line)\n            args = args_match.group(1) if args_match else ''\n            expr = line.split(':', 1)[-1]\n            output.append(f\"def {name}({args.strip()}): return {expr.strip()}\")\n            line = line.replace(f\"lambda {args}:{expr}\", name)\n            counter += 1\n        output.append(line)\n    return '\\n'.join(output)\n\n\n# Refactor: Duplicate Code (basic heuristic using common substrings)\nimport hashlib\n\ndef refactor_duplicate_code(code, details=None):\n    lines = code.splitlines()\n    blocks = {}\n    block_size = 3\n    for i in range(len(lines) - block_size + 1):\n        block = \"\\n\".join(lines[i:i + block_size])\n        h = hashlib.md5(block.encode()).hexdigest()\n        if h in blocks:\n            lines[i:i + block_size] = [f\"{blocks[h]}()\"]\n        else:\n            blocks[h] = f\"extracted_func_{len(blocks)}\"\n\n    # append functions\n    for h, fname in blocks.items():\n        lines.append(f\"\\ndef {fname}():\\n{textwrap.indent('\\n'.join(blocks[h].splitlines()), '    ')}\")\n    return \"\\n\".join(lines)\n\n\n# Refactor: Feature Envy\ndef refactor_feature_envy(code, details):\n    for fn_name in details:\n        code = code.replace(f\"{fn_name}.\", f\"self.{fn_name}_\")\n    return code\n\n# Refactor: Large Classes (split methods to helpers)\ndef refactor_large_classes(code, details=None):\n    class SplitLargeClass(ast.NodeTransformer):\n        def visit_ClassDef(self, node):\n            if len(node.body) > 12:\n                helper_methods = node.body[8:]\n                node.body = node.body[:8]\n                helper_class = ast.ClassDef(\n                    name=f\"{node.name}Helper\",\n                    bases=[],\n                    keywords=[],\n                    body=helper_methods,\n                    decorator_list=[]\n                )\n                return [node, helper_class]\n            return node\n\n    tree = ast.parse(code)\n    tree = SplitLargeClass().visit(tree)\n    ast.fix_missing_locations(tree)\n    return astor.to_source(tree)\n\n\n# Refactor: High Complexity Functions (detects many branches)\ndef refactor_high_complexity(code, details):\n    class ComplexityReducer(ast.NodeTransformer):\n        def visit_FunctionDef(self, node):\n            branch_count = sum(isinstance(n, (ast.If, ast.For, ast.While)) for n in ast.walk(node))\n            if branch_count > 5:\n                node.body.insert(0, ast.Expr(value=ast.Str(s='Refactor: high complexity')))\n            return node\n\n    tree = ast.parse(code)\n    tree = ComplexityReducer().visit(tree)\n    return astor.to_source(tree)\n\n# Refactor: Low Maintainability (replace chained expressions)\ndef refactor_low_maintainability(code, details):\n    class ExpressionUnfolder(ast.NodeTransformer):\n        def visit_BinOp(self, node):\n            if isinstance(node.left, ast.BinOp):\n                temp = ast.Name(id=\"temp_expr\", ctx=ast.Load())\n                return ast.BinOp(left=temp, op=node.op, right=node.right)\n            return node\n\n    tree = ast.parse(code)\n    tree = ExpressionUnfolder().visit(tree)\n    return astor.to_source(tree)\n\n# Dummy implementations for missing functions\n\ndef refactor_useless_exceptions(code, details=None):\n    tree = ast.parse(code)\n\n    class ExceptionHandlerFixer(ast.NodeTransformer):\n        def visit_Try(self, node):\n            self.generic_visit(node)\n            for handler in node.handlers:\n                if len(handler.body) == 1 and isinstance(handler.body[0], ast.Pass):\n                    handler.body[0] = ast.Expr(\n                        value=ast.Call(\n                            func=ast.Name(id=\"print\", ctx=ast.Load()),\n                            args=[ast.Constant(value=\"TODO: handle exception\")],\n                            keywords=[]\n                        )\n                    )\n            return node\n\n    fixed_tree = ExceptionHandlerFixer().visit(tree)\n    ast.fix_missing_locations(fixed_tree)\n    return astor.to_source(fixed_tree)\n\n\ndef refactor_dead_code_variables(code, details=None):\n    tree = ast.parse(code)\n    \n    class DeadCodeVariableRemover(ast.NodeTransformer):\n        def visit_Assign(self, node):\n            targets = [target.id for target in node.targets if isinstance(target, ast.Name)]\n            if any(target in details for target in targets):\n                return None  # Removes the assignment\n            return node\n\n    tree = DeadCodeVariableRemover().visit(tree)\n    ast.fix_missing_locations(tree)\n    return astor.to_source(tree)\n\ndef refactor_excessive_comments(code, details=None):\n    tree = ast.parse(code)\n    \n    class CommentRemover(ast.NodeTransformer):\n        def visit_Comment(self, node):\n            return None  # Removes comments completely\n\n    tree = CommentRemover().visit(tree)\n    ast.fix_missing_locations(tree)\n    return astor.to_source(tree)\n\n\ndef refactor_large_functions(code, details=None):\n    tree = ast.parse(code)\n    \n    class LargeFunctionSplitter(ast.NodeTransformer):\n        def visit_FunctionDef(self, node):\n            if len(node.body) > 20:\n                # Create helper function for the first part\n                new_func_name = f\"{node.name}_helper\"\n                helper_func = ast.FunctionDef(\n                    name=new_func_name,\n                    args=node.args,\n                    body=node.body[10:],  # The second half of the function\n                    decorator_list=[]\n                )\n                node.body = node.body[:10]  # Keep the first half in the main function\n                tree.body.append(helper_func)\n                node.body.append(ast.Return(value=ast.Name(id=new_func_name, ctx=ast.Load())))  # Add call to helper\n            return node\n\n    tree = LargeFunctionSplitter().visit(tree)\n    ast.fix_missing_locations(tree)\n    return astor.to_source(tree)\n\ndef refactor_data_clumps(code, details=None):\n    # Detects repeated parameter groups and refactors them into a dataclass\n    tree = ast.parse(code)\n\n    class DataClumpExtractor(ast.NodeTransformer):\n        def visit_FunctionDef(self, node):\n            param_names = [arg.arg for arg in node.args.args]\n            if len(param_names) > 3:  # Arbitrary threshold\n                clump_vars = param_names[:3]  # Extract first 3 variables (for simplicity)\n                new_class_name = \"DataClump\"\n                dataclass_definition = f\"\"\"\n                @dataclass\n                class {new_class_name}:\n                    {'\\n    '.join([f'{var}: str' for var in clump_vars])}\n                \"\"\"\n                node.body.insert(0, ast.Expr(value=ast.Constant(value=dataclass_definition.strip())))\n                # Replace usage of multiple parameters with the new class\n                for arg in clump_vars:\n                    node.args.args.remove(next(a for a in node.args.args if a.arg == arg))\n                return node\n            return node\n\n    tree = DataClumpExtractor().visit(tree)\n    ast.fix_missing_locations(tree)\n    return astor.to_source(tree)\n\ndef refactor_shotgun_surgery(code, details=None):\n    for loc in details:\n        # Add a comment indicating the location is affected by shotgun surgery\n        code = code.replace(loc, f\"# Shotgun surgery: Refactor to group related logic\\n{loc}\")\n    return code\n\n\ndef refactor_large_file(code, details):\n    # Add comment at the top\n    return \"# This file is large, consider splitting it\\n\\n\" + code\n\n\n# Mapping smell types to refactoring functions\nREFACTOR_FUNCTIONS = {\n    \"useless_exceptions\": refactor_useless_exceptions,\n    \"dead_code_variables\": refactor_dead_code_variables,\n    \"excessive_comments\": refactor_excessive_comments,\n    \"duplicate_code\": refactor_duplicate_code,\n    \"feature_envy\": refactor_feature_envy,\n    \"large_classes\": refactor_large_classes,\n    \"too_many_returns\": refactor_too_many_returns,\n    \"large_functions\": refactor_large_functions,\n    \"long_lambdas\": refactor_long_lambdas,\n    \"data_clumps\": refactor_data_clumps,\n    \"shotgun_surgery\": refactor_shotgun_surgery,\n    \"high_complexity_functions\": refactor_high_complexity,\n    \"low_maintainability\": refactor_low_maintainability,\n    \"deeply_nested_functions\": refactor_deeply_nested_functions,\n    \"large_file\": refactor_large_file,\n}\n\ndef refactor_python_code(code: str, smells: dict) -> str:\n    for smell_type, details in smells.items():\n        refactor_fn = REFACTOR_FUNCTIONS.get(smell_type)\n        if refactor_fn:\n            try:\n                code = refactor_fn(code, details)\n            except Exception as e:\n                print(f\"Error while refactoring {smell_type}: {e}\")\n    return code"
         }
     },
     "javascript": {
-        "App.js": {
-            "Magic Numbers Found": {
-                "details": [
-                    "2023",
-                    "2",
-                    "8"
-                ],
-                "refactoring_example": {
-                    "before": "function calculatePrice(quantity) {\n    if (quantity > 10) {\n        return quantity * 5.99 * 0.9;\n    }\n    return quantity * 5.99;\n}\n\nsetTimeout(checkStatus, 300000);",
-                    "after": "const PRICES = {\n    UNIT_PRICE: 5.99,\n    BULK_DISCOUNT: 0.9,\n    BULK_THRESHOLD: 10\n};\n\nconst TIMEOUTS = {\n    STATUS_CHECK: 5 * 60 * 1000 // 5 minutes in milliseconds\n};\n\nfunction calculatePrice(quantity) {\n    const basePrice = quantity * PRICES.UNIT_PRICE;\n    return quantity > PRICES.BULK_THRESHOLD \n        ? basePrice * PRICES.BULK_DISCOUNT \n        : basePrice;\n}\n\nsetTimeout(checkStatus, TIMEOUTS.STATUS_CHECK);"
-                }
-            }
-        },
-        "App.test.js": {
-            "Global Variables Found": {
-                "details": [
-                    "linkElement"
-                ],
-                "refactoring_example": {
-                    "before": "// script.js\nvar users = [];\nvar config = { apiUrl: 'https://api.example.com' };\n\nfunction addUser(user) {\n    users.push(user);\n}\n\nfunction getConfig() {\n    return config;\n}",
-                    "after": "// users.js\nexport class UserManager {\n    constructor() {\n        this.users = [];\n    }\n    \n    addUser(user) {\n        this.users.push(user);\n    }\n}\n\n// config.js\nexport const config = {\n    apiUrl: 'https://api.example.com'\n};\n\n// main.js\nimport { UserManager } from './users';\nimport { config } from './config';\n\nconst userManager = new UserManager();"
-                }
-            }
-        },
-        "index.js": {
-            "Global Variables Found": {
-                "details": [
-                    "root"
-                ],
-                "refactoring_example": {
-                    "before": "// script.js\nvar users = [];\nvar config = { apiUrl: 'https://api.example.com' };\n\nfunction addUser(user) {\n    users.push(user);\n}\n\nfunction getConfig() {\n    return config;\n}",
-                    "after": "// users.js\nexport class UserManager {\n    constructor() {\n        this.users = [];\n    }\n    \n    addUser(user) {\n        this.users.push(user);\n    }\n}\n\n// config.js\nexport const config = {\n    apiUrl: 'https://api.example.com'\n};\n\n// main.js\nimport { UserManager } from './users';\nimport { config } from './config';\n\nconst userManager = new UserManager();"
-                }
-            }
-        },
-        "reportWebVitals.js": {
-            "Global Variables Found": {
-                "details": [
-                    "reportWebVitals"
-                ],
-                "refactoring_example": {
-                    "before": "// script.js\nvar users = [];\nvar config = { apiUrl: 'https://api.example.com' };\n\nfunction addUser(user) {\n    users.push(user);\n}\n\nfunction getConfig() {\n    return config;\n}",
-                    "after": "// users.js\nexport class UserManager {\n    constructor() {\n        this.users = [];\n    }\n    \n    addUser(user) {\n        this.users.push(user);\n    }\n}\n\n// config.js\nexport const config = {\n    apiUrl: 'https://api.example.com'\n};\n\n// main.js\nimport { UserManager } from './users';\nimport { config } from './config';\n\nconst userManager = new UserManager();"
-                }
-            }
-        },
-        "setupTests.js": {},
-        "Codebox.js": {
-            "Global Variables Found": {
-                "details": [
-                    "Codebox",
-                    "handleCopyClick",
-                    "snippet",
-                    "language"
-                ],
-                "refactoring_example": {
-                    "before": "// script.js\nvar users = [];\nvar config = { apiUrl: 'https://api.example.com' };\n\nfunction addUser(user) {\n    users.push(user);\n}\n\nfunction getConfig() {\n    return config;\n}",
-                    "after": "// users.js\nexport class UserManager {\n    constructor() {\n        this.users = [];\n    }\n    \n    addUser(user) {\n        this.users.push(user);\n    }\n}\n\n// config.js\nexport const config = {\n    apiUrl: 'https://api.example.com'\n};\n\n// main.js\nimport { UserManager } from './users';\nimport { config } from './config';\n\nconst userManager = new UserManager();"
-                }
+        "background.js": {
+            "smells": [
+                "Low Comment Density (<2%): 0 comments",
+                "Long Chained Calls Found: 1 chains"
+            ],
+            "metrics": {
+                "total_lines": 10,
+                "num_console_logs": 0,
+                "num_functions": 0,
+                "function_lengths": [],
+                "max_nesting_level": 3
             },
-            "Magic Numbers Found": {
-                "details": [
-                    "2000"
-                ],
-                "refactoring_example": {
-                    "before": "function calculatePrice(quantity) {\n    if (quantity > 10) {\n        return quantity * 5.99 * 0.9;\n    }\n    return quantity * 5.99;\n}\n\nsetTimeout(checkStatus, 300000);",
-                    "after": "const PRICES = {\n    UNIT_PRICE: 5.99,\n    BULK_DISCOUNT: 0.9,\n    BULK_THRESHOLD: 10\n};\n\nconst TIMEOUTS = {\n    STATUS_CHECK: 5 * 60 * 1000 // 5 minutes in milliseconds\n};\n\nfunction calculatePrice(quantity) {\n    const basePrice = quantity * PRICES.UNIT_PRICE;\n    return quantity > PRICES.BULK_THRESHOLD \n        ? basePrice * PRICES.BULK_DISCOUNT \n        : basePrice;\n}\n\nsetTimeout(checkStatus, TIMEOUTS.STATUS_CHECK);"
-                }
-            },
-            "Duplicate Code": {
-                "details": [
-                    "('            color: #ddd;', '            font-size: 1.2rem;', '          }')"
-                ],
-                "refactoring_example": {
-                    "before": "No example available",
-                    "after": "No example available"
-                }
-            }
+            "code": "chrome.action.onClicked.addListener((tab) => {\n  if (tab.url && tab.url.includes(\"github.com\")) {\n    chrome.scripting.executeScript({\n      target: { tabId: tab.id },\n      files: [\"content.js\"]\n    });\n  } else {\n    alert(\"Not a GitHub repo page.\");\n  }\n});\n"
         },
-        "data.js": {
-            "Magic Numbers Found": {
-                "details": [
-                    "07",
-                    "015",
-                    "8529",
-                    "2",
-                    "7",
-                    "3",
-                    "016",
-                    "17866",
-                    "9",
-                    "09",
-                    "4",
-                    "015",
-                    "13853",
-                    "9",
-                    "12",
-                    "5",
-                    "017",
-                    "2338",
-                    "4",
-                    "10",
-                    "8",
-                    "014",
-                    "9578",
-                    "5",
-                    "7",
-                    "017",
-                    "19141",
-                    "2",
-                    "7",
-                    "12",
-                    "015",
-                    "6543",
-                    "11",
-                    "4",
-                    "014",
-                    "13035",
-                    "6",
-                    "05",
-                    "2",
-                    "014",
-                    "18488",
-                    "12",
-                    "014",
-                    "12317",
-                    "4",
-                    "12",
-                    "8",
-                    "013",
-                    "6230",
-                    "3",
-                    "02",
-                    "2",
-                    "015",
-                    "9709",
-                    "9",
-                    "11",
-                    "9",
-                    "014",
-                    "9766",
-                    "02",
-                    "8",
-                    "014",
-                    "7685",
-                    "9",
-                    "08",
-                    "5",
-                    "016",
-                    "18012",
-                    "5",
-                    "05",
-                    "016",
-                    "2785",
-                    "9",
-                    "12",
-                    "016",
-                    "9967",
-                    "4",
-                    "10",
-                    "3",
-                    "014",
-                    "5584",
-                    "3",
-                    "12",
-                    "4",
-                    "015",
-                    "5286",
-                    "3",
-                    "11",
-                    "013",
-                    "13511",
-                    "11",
-                    "9",
-                    "013",
-                    "6498",
-                    "9",
-                    "10",
-                    "014",
-                    "10359",
-                    "7",
-                    "04",
-                    "6",
-                    "018",
-                    "8118",
-                    "9",
-                    "10",
-                    "3",
-                    "016",
-                    "10204",
-                    "7",
-                    "10",
-                    "2",
-                    "013",
-                    "6528",
-                    "6",
-                    "9",
-                    "2",
-                    "014",
-                    "5619",
-                    "5",
-                    "05",
-                    "2",
-                    "016",
-                    "5091",
-                    "3",
-                    "09",
-                    "3",
-                    "018",
-                    "14566",
-                    "8",
-                    "2",
-                    "2",
-                    "018",
-                    "5284",
-                    "7"
+        "content.js": {
+            "smells": [
+                "Long Chained Calls Found: 3 chains",
+                "Magic Numbers Found: 38 occurrences",
+                "Deep Nesting (>=4 levels): 9 levels",
+                "Long Function (>50 lines): 166 lines",
+                "Duplicate Code Blocks: 14 blocks repeated",
+                "Inconsistent Naming Found: Mixed camelCase and snake_case (1 snake, 46 camel)"
+            ],
+            "metrics": {
+                "total_lines": 232,
+                "num_console_logs": 4,
+                "num_functions": 1,
+                "function_lengths": [
+                    166
                 ],
-                "refactoring_example": {
-                    "before": "function calculatePrice(quantity) {\n    if (quantity > 10) {\n        return quantity * 5.99 * 0.9;\n    }\n    return quantity * 5.99;\n}\n\nsetTimeout(checkStatus, 300000);",
-                    "after": "const PRICES = {\n    UNIT_PRICE: 5.99,\n    BULK_DISCOUNT: 0.9,\n    BULK_THRESHOLD: 10\n};\n\nconst TIMEOUTS = {\n    STATUS_CHECK: 5 * 60 * 1000 // 5 minutes in milliseconds\n};\n\nfunction calculatePrice(quantity) {\n    const basePrice = quantity * PRICES.UNIT_PRICE;\n    return quantity > PRICES.BULK_THRESHOLD \n        ? basePrice * PRICES.BULK_DISCOUNT \n        : basePrice;\n}\n\nsetTimeout(checkStatus, TIMEOUTS.STATUS_CHECK);"
-                }
-            }
+                "max_nesting_level": 9
+            },
+            "code": "(async () => {\n    const pathParts = window.location.pathname.split('/');\n    if (pathParts.length < 3 || !pathParts[1] || !pathParts[2]) {\n        console.log(\"[EXTENSION] Not a repository page. Skipping analysis.\");\n        return;\n    }\n\n    const repoPath = pathParts.slice(1, 3).join('/');\n    const repoUrl = `https://github.com/${repoPath}`;\n    console.log(\"[EXTENSION] Analyzing repository:\", repoUrl);\n\n    try {\n        const response = await fetch('http://localhost:5000/analyze', {\n            method: 'POST',\n            headers: { 'Content-Type': 'application/json' },\n            body: JSON.stringify({ repo_url: repoUrl })\n        });\n\n        if (!response.ok) {\n            const error = await response.json();\n            throw new Error(error.error || \"Analysis failed\");\n        }\n\n        const data = await response.json();\n        console.log(\"[EXTENSION] Analysis results:\", data);\n\n        const smellsByFile = {};\n\n        Object.entries(data.python || {}).forEach(([file, content]) => {\n            if ((content?.smells?.length > 0) || content?.metrics) {\n                smellsByFile[file] = {\n                    smells: content.smells || [],\n                    metrics: content.metrics || {},\n                    code: content.code || \"\"\n                };\n            }\n        });\n\n        Object.entries(data.javascript || {}).forEach(([file, content]) => {\n            if ((content?.smells?.length > 0) || content?.metrics) {\n                smellsByFile[file] = {\n                    smells: content.smells || [],\n                    metrics: content.metrics || {},\n                    code: content.code || \"\"\n                };\n            }\n        });\n\n        console.log(\"[EXTENSION] Processed smells + metrics:\", smellsByFile);\n\n        function addSmellIconsReliable(smellsByFile) {\n            const fileLinks = document.querySelectorAll('a.js-navigation-open, a.Link--primary');\n\n            fileLinks.forEach(link => {\n                const text = link.textContent.trim();\n                const href = link.getAttribute('href');\n                const fileName = text || (href && href.split('/').pop());\n\n                const matchedKey = Object.keys(smellsByFile).find(key => {\n                    return key.endsWith('/' + fileName) || key === fileName;\n                });\n\n                const fileData = matchedKey ? smellsByFile[matchedKey] : null;\n                const fileSmells = fileData?.smells || [];\n                const metrics = fileData?.metrics || {};\n                const code = fileData?.code || \"\";\n\n                // \u2139\ufe0f Smell icon\n                if (fileSmells.length > 0 && !link.parentElement.querySelector('.smell-indicator')) {\n                    const infoIcon = document.createElement('span');\n                    infoIcon.className = 'smell-indicator';\n                    infoIcon.innerHTML = ' \u2139\ufe0f';\n                    infoIcon.style.cssText = `font-size: 16px; color: #f06; cursor: pointer; margin-left: 8px; position: relative;`;\n\n                    const tooltip = document.createElement('div');\n                    tooltip.className = 'smell-tooltip';\n                    tooltip.style.cssText = `\n                        display: none;\n                        position: absolute;\n                        padding: 8px;\n                        z-index: 100;\n                        background: #fff;\n                        border: 1px solid #d1d5da;\n                        border-radius: 4px;\n                        top: 20px;\n                        left: 0;\n                        box-shadow: 0 1px 5px rgba(0,0,0,0.2);\n                        white-space: normal;\n                        width: 300px;\n                    `;\n\n                    tooltip.innerHTML = `\n                        <strong>Smells in ${fileName}:</strong>\n                        <ul style=\"margin-top: 5px; padding-left: 20px;\">\n                            ${fileSmells.map(smell => `<li>${smell}</li>`).join('')}\n                        </ul>\n                    `;\n\n                    infoIcon.appendChild(tooltip);\n\n                    infoIcon.addEventListener('click', (e) => {\n                        e.preventDefault();\n                        e.stopPropagation();\n\n                        document.querySelectorAll('.smell-modal').forEach(m => m.remove());\n\n                        const modal = document.createElement('div');\n                        modal.className = 'smell-modal';\n                        modal.style.cssText = `\n                            position: absolute;\n                            color: black;\n                            top: ${e.clientY + window.scrollY + 10}px;\n                            left: ${e.clientX + window.scrollX + 10}px;\n                            width: 500px;\n                            max-height: 50%;\n                            overflow-y: auto;\n                            background: white;\n                            border: 1px solid #ccc;\n                            border-radius: 8px;\n                            padding: 20px;\n                            z-index: 9999;\n                            box-shadow: 0 2px 10px rgba(0,0,0,0.3);\n                        `;\n\n                        modal.innerHTML = `\n                            <h2>Smells in ${fileName}</h2>\n                            <ul style=\"margin-top: 10px; padding-left: 20px;\">\n                                ${fileSmells.map(smell => `<li>${smell}</li>`).join('')}\n                            </ul>\n                            <div style=\"margin-top: 20px;\">\n                                <button class=\"refactorBtn\" style=\"background: #0a0; color: white; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer;\">Refactor Code</button>\n                                <button class=\"closeModal\" style=\"background: #f06; color: white; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;\">Close</button>\n                            </div>\n                        `;\n\n                        document.body.appendChild(modal);\n                        modal.querySelector('.closeModal').addEventListener('click', () => modal.remove());\n                        modal.querySelector('.refactorBtn').addEventListener('click', () => {\n                            const refactorTab = window.open('http://127.0.0.1:3000/refactor/refactor.html', '_blank');\n                            // const refactorTab = window.open('http://127.0.0.1:5500/refactor/refactor.html', '_blank');     // correct accordingly\n                        \n                            // Wait for the new tab to load before sending the message\n                            const codePayload = { filename: fileName, code, fileSmells };\n                        \n                            const sendMessage = () => {\n                                refactorTab.postMessage(codePayload, '*');\n                            };\n                        \n                            // Use interval to ensure message is sent after the page loads\n                            const intervalId = setInterval(() => {\n                                if (refactorTab && refactorTab.postMessage) {\n                                    sendMessage();\n                                    clearInterval(intervalId);\n                                }\n                            }, 500);\n                        });                        \n                    });\n                    link.parentElement.appendChild(infoIcon);\n                }\n\n                // \ud83d\udcca Metrics icon\n                if (Object.keys(metrics).length > 0 && !link.parentElement.querySelector('.metrics-indicator')) {\n                    const chartIcon = document.createElement('span');\n                    chartIcon.className = 'metrics-indicator';\n                    chartIcon.innerHTML = ' \ud83d\udcca';\n                    chartIcon.style.cssText = `font-size: 16px; color: #06f; cursor: pointer; margin-left: 4px;`;\n\n                    chartIcon.addEventListener('click', (e) => {\n                        e.preventDefault();\n                        e.stopPropagation();\n\n                        document.querySelectorAll('.metrics-modal').forEach(m => m.remove());\n\n                        const modal = document.createElement('div');\n                        modal.className = 'metrics-modal';\n                        modal.style.cssText = `\n                            position: absolute;\n                            color: black;\n                            top: ${e.clientY + window.scrollY + 10}px;\n                            left: ${e.clientX + window.scrollX + 10}px;\n                            width: 520px;\n                            background: white;\n                            border: 1px solid #ccc;\n                            border-radius: 8px;\n                            padding: 20px;\n                            z-index: 9999;\n                            box-shadow: 0 2px 10px rgba(0,0,0,0.3);\n                        `;\n\n                        const metricEntries = Object.entries(metrics);\n                        const bars = metricEntries.map(([key, value]) => {\n                            const width = Math.min(100, value); // bar width capped at 100%\n                            return `\n                                <div style=\"margin: 8px 0;\">\n                                    <div>${key}: ${value}</div>\n                                    <div style=\"height: 20px; background: #eee; border-radius: 5px; overflow: hidden;\">\n                                        <div style=\"height: 100%; width: ${width}%; background: #06f;\"></div>\n                                    </div>\n                                </div>\n                            `;\n                        }).join('');\n\n                        modal.innerHTML = `\n                            <h2>Metrics in ${fileName}</h2>\n                            <div>${bars}</div>\n                            <button class=\"closeMetrics\" style=\"margin-top: 20px; background: #f06; color: white; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer;\">Close</button>\n                        `;\n\n                        document.body.appendChild(modal);\n                        modal.querySelector('.closeMetrics').addEventListener('click', () => modal.remove());\n                    });\n\n                    link.parentElement.appendChild(chartIcon);\n                }\n            });\n        }\n\n        addSmellIconsReliable(smellsByFile);\n\n        let lastUrl = location.href;\n        new MutationObserver(() => {\n            const currentUrl = location.href;\n            if (currentUrl !== lastUrl) {\n                lastUrl = currentUrl;\n                setTimeout(() => addSmellIconsReliable(smellsByFile), 1000);\n            }\n        }).observe(document, { subtree: true, childList: true });\n\n    } catch (err) {\n        console.error(\"[EXTENSION] Error:\", err);\n    }\n})();"
         },
-        "Excel.js": {
-            "Magic Numbers Found": {
-                "details": [
-                    "9",
-                    "9",
-                    "160",
-                    "130",
-                    "130",
-                    "130",
-                    "120",
-                    "120"
-                ],
-                "refactoring_example": {
-                    "before": "function calculatePrice(quantity) {\n    if (quantity > 10) {\n        return quantity * 5.99 * 0.9;\n    }\n    return quantity * 5.99;\n}\n\nsetTimeout(checkStatus, 300000);",
-                    "after": "const PRICES = {\n    UNIT_PRICE: 5.99,\n    BULK_DISCOUNT: 0.9,\n    BULK_THRESHOLD: 10\n};\n\nconst TIMEOUTS = {\n    STATUS_CHECK: 5 * 60 * 1000 // 5 minutes in milliseconds\n};\n\nfunction calculatePrice(quantity) {\n    const basePrice = quantity * PRICES.UNIT_PRICE;\n    return quantity > PRICES.BULK_THRESHOLD \n        ? basePrice * PRICES.BULK_DISCOUNT \n        : basePrice;\n}\n\nsetTimeout(checkStatus, TIMEOUTS.STATUS_CHECK);"
-                }
-            }
-        },
-        "form.js": {
-            "Global Variables Found": {
-                "details": [
-                    "RegExForm",
-                    "handleCheckboxChange",
-                    "handleSubmit",
-                    "handleChangeRegex",
-                    "handleChangeColNum",
-                    "sentences"
-                ],
-                "refactoring_example": {
-                    "before": "// script.js\nvar users = [];\nvar config = { apiUrl: 'https://api.example.com' };\n\nfunction addUser(user) {\n    users.push(user);\n}\n\nfunction getConfig() {\n    return config;\n}",
-                    "after": "// users.js\nexport class UserManager {\n    constructor() {\n        this.users = [];\n    }\n    \n    addUser(user) {\n        this.users.push(user);\n    }\n}\n\n// config.js\nexport const config = {\n    apiUrl: 'https://api.example.com'\n};\n\n// main.js\nimport { UserManager } from './users';\nimport { config } from './config';\n\nconst userManager = new UserManager();"
-                }
+        "popup.js": {
+            "smells": [
+                "Low Comment Density (<2%): 0 comments",
+                "Magic Numbers Found: 2 occurrences",
+                "Inconsistent Naming Found: Mixed camelCase and snake_case (1 snake, 4 camel)"
+            ],
+            "metrics": {
+                "total_lines": 18,
+                "num_console_logs": 0,
+                "num_functions": 0,
+                "function_lengths": [],
+                "max_nesting_level": 2
             },
-            "Magic Numbers Found": {
-                "details": [
-                    "127",
-                    "5000",
-                    "2"
-                ],
-                "refactoring_example": {
-                    "before": "function calculatePrice(quantity) {\n    if (quantity > 10) {\n        return quantity * 5.99 * 0.9;\n    }\n    return quantity * 5.99;\n}\n\nsetTimeout(checkStatus, 300000);",
-                    "after": "const PRICES = {\n    UNIT_PRICE: 5.99,\n    BULK_DISCOUNT: 0.9,\n    BULK_THRESHOLD: 10\n};\n\nconst TIMEOUTS = {\n    STATUS_CHECK: 5 * 60 * 1000 // 5 minutes in milliseconds\n};\n\nfunction calculatePrice(quantity) {\n    const basePrice = quantity * PRICES.UNIT_PRICE;\n    return quantity > PRICES.BULK_THRESHOLD \n        ? basePrice * PRICES.BULK_DISCOUNT \n        : basePrice;\n}\n\nsetTimeout(checkStatus, TIMEOUTS.STATUS_CHECK);"
-                }
-            },
-            "Duplicate Code": {
-                "details": [
-                    "('            <input', '              type=\"text\"', '              name=\"regexrow\"')",
-                    "('              type=\"text\"', '              name=\"regexrow\"', '              className=\"field\"')"
-                ],
-                "refactoring_example": {
-                    "before": "No example available",
-                    "after": "No example available"
-                }
-            },
-            "Unused Variables": {
-                "details": [
-                    "RegExForm",
-                    "handleCheckboxChange"
-                ],
-                "refactoring_example": {
-                    "before": "function processData(data) {\n    let temp = data.map(x => x * 2);  // Unused variable\n    let result = data.filter(x => x > 10);\n    return result;\n}",
-                    "after": "function processData(data) {\n    // Remove unused variable and directly return filtered result\n    return data.filter(x => x > 10);\n}"
-                }
-            }
+            "code": "document.getElementById(\"analyze\").addEventListener(\"click\", async () => {\n  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });\n  const url = tab.url;\n\n  if (!url.includes(\"github.com\")) {\n    alert(\"Not a GitHub repository!\");\n    return;\n  }\n\n  const response = await fetch(\"http://localhost:5000/analyze\", {\n    method: \"POST\",\n    headers: { \"Content-Type\": \"application/json\" },\n    body: JSON.stringify({ repo_url: url })\n  });\n\n  const data = await response.json();\n  document.getElementById(\"result\").textContent = JSON.stringify(data, null, 2);\n});\n"
         }
     }
 }
