@@ -7,6 +7,8 @@ import os
 from langchain_groq import ChatGroq
 from langchain.schema import HumanMessage
 import re
+from refactor.js_refactor import refactor_js_code
+from refactor.py_refactor import refactor_python_code
 
 load_dotenv()  # loads .env file
 ref = ChatGroq(
@@ -18,7 +20,7 @@ ref = ChatGroq(
 
 app = Flask(__name__)
 CORS(app, resources={r"/analyze": {"origins": "*"}})
-CORS(app, resources={r"/refactor_code_ref": {"origins": "http://127.0.0.1:3000"}})
+CORS(app, resources={r"/refactor_code_ref": {"origins": "http://127.0.0.1:5500"}})
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 

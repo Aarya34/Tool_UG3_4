@@ -268,12 +268,29 @@ def refactor_large_file(code, details):
     # Add comment at the top
     return "# This file is large, consider splitting it\n\n" + code
 
+# Mapping substrings to smell identifiers used in REFACTOR_FUNCTIONS
+SMELL_KEYWORDS = {
+    "High Complexity Functions": "high_complexity_functions",
+    "Low Maintainability Index": "low_maintainability",
+    "Large File": "large_file",
+    "Deeply Nested Functions": "deeply_nested_functions",
+    "Large Functions": "large_functions",
+    "Feature Envy": "feature_envy",
+    "Data Clumps": "data_clumps",
+    "Dead Code Variables": "dead_code_variables",
+    "Shotgun Surgery": "shotgun_surgery",
+    "Long Lambdas": "long_lambdas",
+    "Useless Exceptions": "useless_exceptions",
+    "Duplicate Code": "duplicate_code",
+    "Large Classes": "large_classes",
+    "Too Many Returns": "too_many_returns",
+    "Too Many Parameters": "too_many_parameters",  # Optional if you define its refactor
+}
 
 # Mapping smell types to refactoring functions
 REFACTOR_FUNCTIONS = {
     "useless_exceptions": refactor_useless_exceptions,
     "dead_code_variables": refactor_dead_code_variables,
-    "excessive_comments": refactor_excessive_comments,
     "duplicate_code": refactor_duplicate_code,
     "feature_envy": refactor_feature_envy,
     "large_classes": refactor_large_classes,
@@ -288,12 +305,15 @@ REFACTOR_FUNCTIONS = {
     "large_file": refactor_large_file,
 }
 
-def refactor_python_code(code: str, smells: dict) -> str:
-    for smell_type, details in smells.items():
-        refactor_fn = REFACTOR_FUNCTIONS.get(smell_type)
-        if refactor_fn:
-            try:
-                code = refactor_fn(code, details)
-            except Exception as e:
-                print(f"Error while refactoring {smell_type}: {e}")
+def refactor_python_code(code: str, smell_list: list) -> str:
+    for smell_description in smell_list:
+        for keyword, smell_type in SMELL_KEYWORDS.items():
+            if keyword in smell_description:
+                refactor_fn = REFACTOR_FUNCTIONS.get(smell_type)
+                if refactor_fn:
+                    try:
+                        code = refactor_fn(code, smell_description)
+                    except Exception as e:
+                        print(f"Error while refactoring {smell_type}: {e}")
+                break
     return code
