@@ -14,10 +14,14 @@ Our project aims to improve code quality in open-source repositories by detectin
 
 - **Browser-Based Detection:** A local Chrome extension that activates on GitHub repository pages.
 - **Interactive UI:** A small icon appears next to each folder in a repo. Clicking it triggers smell detection.
+- **File Metrics View:** A statistics icon is also shown beside the info icon. Clicking it displays file-level metrics like- Total number of lines, Average function length, etc.
 - **Language Support:** Supports both **JavaScript** and **Python** codebases.
 - **Smell Highlighting:** Generates a list of detected smells with **file-wise** and **folder-wise** breakdowns.
 - **Smell Report Storage:** All detected smells are stored in `code_smells_report.json` in the repo's root directory.
-
+- **Dual Code Editor:** Displays both original and refactored code side by side.
+- **Code Highlighting:** Uses CodeMirror to color and format the code properly.
+- **Language Detection:** Supports both Python and JavaScript syntax highlighting.
+- **Auto Refactor:** Automatically sends code and smell list to backend and displays the refactored changes.
 ---
 
 ## Code Smells Detected
@@ -64,17 +68,22 @@ Our project aims to improve code quality in open-source repositories by detectin
    ```
    python server.py
    ```
-2.  Load the Chrome Extension
+2. **Run the html:** *(in new terminal)*
+   ```
+   cd refactor
+   python -m http.server 3000
+   ```
+3.  Load the Chrome Extension
     - Open Chrome and go to: `chrome://extensions/`
     - Enable **Developer Mode** (top right)
     - Click **Load Unpacked** (top left)
     - Select the folder named: `code-smell-extension`
 
-3. Use the Extension on GitHub
+4. Use the Extension on GitHub
     - Open any **public GitHub repository** in a new tab.
     - Click on the **extension icon** (toggle it ON if needed).
-    - A small 🛈 (info icon) will appear next to each **file/folder**.
-    - Click the icon to view **all detected code smells** for that folder.
+    - A small 🛈 (info icon) and 📊 Stats Icon will appear next to each **file/folder**.
+    - Click the i icon to view **all detected code smells** for that folder and on 📊 icon to show **refactored code**.
 
 #### Testing Repo - https://github.com/akash-madugundi/testing.git
 ---
@@ -84,7 +93,7 @@ Our project aims to improve code quality in open-source repositories by detectin
 ### Frontend (Chrome Extension)
 
 - Injects a **content script** into GitHub pages.
-- Detects folder structure dynamically and **attaches a clickable icon**.
+- Detects folder structure dynamically and **attaches a clickable icons**.
 - Sends **repository URL** and **file paths** to the backend.
 
 ### Backend (Python API)
@@ -116,9 +125,9 @@ Our project aims to improve code quality in open-source repositories by detectin
 
 ## Contributions
 
-- **Akshatha RH** (CS22B003) - (for js)  Duplicate Code, Too Many Parameters, Unused Variables smells, Low Comment Density, Empty Catch Blocks, Global variables  
-- **A Sai Preethika** (CS22B006) - (for py) Long lambdas, Useless exceptions ,Duplicate code ,Large classes, Too many returns, Display of smell info on icon click
-- **Ch Aarya** (CS22B018) - (for py) High complexity functions, Low maintainability, Large file, Globalvariables, Large parameters smells, Integrated code to chrome extension
-- **K Sanjay Varshith** (CS22B029) - (for py)  Deeply nested functions, Large functions, Feature envy, Data clumps, Dead code variables, Display of info icon beside smelly files  
-- **K Akhil Solomon** (CS22B032) - Callback Hell, Long Chained Calls , Inconsistent Naming smell, Shotgun surgery smell, Unnecessary Semicolons smell,  Useless exceptions smell
-- **M Akash** (CS22B037) -  Long Function smell, Large File smell, Console Log Overuse smell, Deep Nesting smell, Magic Numbers smell, Dead code variables smell
+- **Akshatha RH** (CS22B003) - (for js)  Duplicate Code, Too Many Parameters, Unused Variables smells, Low Comment Density, Empty Catch Blocks, Global variables, Refactored code editor
+- **A Sai Preethika** (CS22B006) - (for py) Long lambdas, Useless exceptions ,Duplicate code ,Large classes, Too many returns, Display of smell info on icon click, Code editor highlighting
+- **Ch Aarya** (CS22B018) - (for py) High complexity functions, Low maintainability, Large file, Globalvariables, Large parameters smells, Integrated code to chrome extension, Py Refactored code
+- **K Sanjay Varshith** (CS22B029) - (for py)  Deeply nested functions, Large functions, Feature envy, Data clumps, Dead code variables, Display of info icon beside smelly files, Py Refactored code
+- **K Akhil Solomon** (CS22B032) - Callback Hell, Long Chained Calls , Inconsistent Naming smell, Shotgun surgery smell, Unnecessary Semicolons smell,  Useless exceptions smell, Js refactored code
+- **M Akash** (CS22B037) -  Long Function smell, Large File smell, Console Log Overuse smell, Deep Nesting smell, Magic Numbers smell, Dead code variables smell, Graph metrics, Js refactored code
