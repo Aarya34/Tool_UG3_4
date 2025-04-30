@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Refactor Editor</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css" />
+  <style>
+    body {
+      font-family: sans-serif;
+      padding-left: 20px;
+    }
+
+    .editor-container {
+      display: flex;
+      gap: 20px;
+    }
+
+    textarea {
+      display: none; /* Hide raw textareas */
+    }
+
+    .CodeMirror {
+      height: 550px;
+      width: 45rem;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      font-size: 14px;
+    }
+  </style>  
+</head>
+<body>
+  <h1>Code Refactoring Tool</h1>
+  <div class="editor-container">
+    <div>
+      <h2>Original Code</h2>
+      <textarea id="originalEditor"></textarea>
+    </div>
+    <div>
+      <h2>Refactored Code</h2>
+      <textarea id="refactoredEditor"></textarea>
+    </div>
+  </div>
+
+  <!-- CodeMirror Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/python/python.min.js"></script>
+
+  <script>
+    const originalEditor = CodeMirror.fromTextArea(document.getElementById("originalEditor"), {
+      lineNumbers: true,
+      mode: "javascript",
+      theme: "default",
+      readOnly: true
+    });
+
+    const refactoredEditor = CodeMirror.fromTextArea(document.getElementById("refactoredEditor"), {
+      lineNumbers: true,
+      mode: "javascript",
+      theme: "default"
+    });
+
+    window.addEventListener("message", (event) => {
+      if (event.data && event.data.filename && event.data.code) {
+        const { filename, code, fileSmells } = event.data;
+        const mode = filename.endsWith('.py') ? 'python' : 'javascript';
+
+        originalEditor.setOption("mode", mode);
+        refactoredEditor.setOption("mode", mode);
+
+        originalEditor.setValue(code);
+
+        fetch("http://localhost:5000/refactor_code_llm", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ code: code, fileSmells: fileSmells })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.refactored_code) {
+            refactoredEditor.setValue(data.refactored_code);
+          } else {
+            refactoredEditor.setValue("Error: " + data.error);
+          }
+        })
+        .catch(err => {
+          refactoredEditor.setValue("Request failed: " + err.message);
+        });
+      }
+    });
+  </script>  
+</body>
+</html>
