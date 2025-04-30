@@ -1,5 +1,6 @@
 # Code Smell Detector for GitHub Repositories
-
+## Demo Video
+https://drive.google.com/file/d/1_0PtB_GNSpLjZtFehcIK3GJjU7N1X_kw/view?usp=sharing
 ## Project Overview
 Our project aims to improve code quality in open-source repositories by detecting **code smells** in **JavaScript** and **Python**. The tool is divided into two releases:
 
