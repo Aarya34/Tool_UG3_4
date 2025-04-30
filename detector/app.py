@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 from detector.py_analyzer import analyze_py_code
 from detector.js_analyzer import analyze_js_code
+from refactor.py_refactor import refactor_python_code
+from refactor.js_refactor import refactor_js_code
 
 REPO_DIR = "temp_repo"
 
