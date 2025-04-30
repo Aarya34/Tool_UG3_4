@@ -71,7 +71,7 @@ Our project aims to improve code quality in open-source repositories by detectin
 2. **Run the html:** *(in new terminal)*
    ```
    cd refactor
-   python -m http.server 3000
+   python -m http.server 8000
    ```
 3.  Load the Chrome Extension
     - Open Chrome and go to: `chrome://extensions/`

@@ -137,7 +137,7 @@
                         modal.querySelector('.closeModal').addEventListener('click', () => modal.remove());
                         modal.querySelector('.refactorBtn').addEventListener('click', () => {
                             // const refactorTab = window.open('http://127.0.0.1:3000/refactor/refactor.html', '_blank');
-                            const refactorTab = window.open('http://127.0.0.1:5500/refactor/refactor.html', '_blank');     // correct accordingly
+                            const refactorTab = window.open('http://localhost:8000/refactor.html', '_blank');     // correct accordingly
                         
                             // Wait for the new tab to load before sending the message
                             const codePayload = { filename: fileName, code, fileSmells };
