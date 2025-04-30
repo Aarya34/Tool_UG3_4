@@ -7,10 +7,6 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-detector/sample.js
-detector/sample.py
-detector/code_smells_report.json
-
 node_modules
 dist
 dist-ssr
@@ -26,7 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Python
-__pycache__/
-*.py[cod]

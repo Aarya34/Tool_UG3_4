@@ -1,0 +1,607 @@
+{
+    "python": {
+        "app.py": {
+            "high_complexity_functions": {
+                "details": [
+                    "excelColnoToColNo"
+                ],
+                "refactoring_example": {
+                    "before": "def complex_function(data):\n    result = 0\n    for item in data:\n        if item > 10:\n            if isinstance(item, int):\n                if item % 2 == 0:\n                    result += item * 2\n                else:\n                    result += item\n            else:\n                try:\n                    num = float(item)\n                    result += num\n                except:\n                    pass\n    return result",
+                    "after": "def is_valid_number(item):\n    return isinstance(item, (int, float)) or str(item).replace('.', '').isdigit()\n\ndef process_even_number(num):\n    return num * 2 if num % 2 == 0 else num\n\ndef process_item(item):\n    if not is_valid_number(item) or item <= 10:\n        return 0\n    try:\n        num = float(item) if isinstance(item, str) else item\n        return process_even_number(num) if isinstance(num, int) else num\n    except ValueError:\n        return 0\n\ndef refactored_function(data):\n    return sum(process_item(item) for item in data)"
+                }
+            },
+            "deeply_nested_functions": {
+                "details": [
+                    "refactor_special_missing_values_endpoint",
+                    "refactor_missing_values_endpoint",
+                    "excelColnoToColNo"
+                ],
+                "refactoring_example": {
+                    "before": "def process_data(data):\n    results = []\n    for item in data:\n        if item.is_valid():\n            if item.type == 'user':\n                if item.age >= 18:\n                    if item.has_permission:\n                        results.append(item.process())\n    return results",
+                    "after": "def meets_criteria(item):\n    return (item.is_valid() and \n            item.type == 'user' and \n            item.age >= 18 and \n            item.has_permission)\n\ndef process_data(data):\n    return [item.process() for item in data if meets_criteria(item)]"
+                }
+            },
+            "too_many_returns": {
+                "details": [
+                    "excelColnoToColNo"
+                ],
+                "refactoring_example": {
+                    "before": "def check_user_access(user):\n    if not user:\n        return False\n    if not user.is_active:\n        return False\n    if user.is_banned:\n        return False\n    if not user.has_permission('access'):\n        return False\n    if user.login_attempts > 3:\n        return False\n    return True",
+                    "after": "def check_user_access(user):\n    conditions = [\n        bool(user),\n        user.is_active,\n        not user.is_banned,\n        user.has_permission('access'),\n        user.login_attempts <= 3\n    ]\n    return all(conditions)"
+                }
+            },
+            "feature_envy": {
+                "details": [
+                    "regularExp"
+                ],
+                "refactoring_example": {
+                    "before": "class Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def calculate_discount(self):\n        if self.customer.loyalty_years > 5:\n            if self.customer.purchase_history > 1000:\n                return 0.2\n            return 0.1\n        return 0",
+                    "after": "class Customer:\n    def __init__(self, loyalty_years, purchase_history):\n        self.loyalty_years = loyalty_years\n        self.purchase_history = purchase_history\n    \n    def calculate_discount(self):\n        if self.loyalty_years > 5:\n            return 0.2 if self.purchase_history > 1000 else 0.1\n        return 0\n\nclass Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def get_discount(self):\n        return self.customer.calculate_discount()"
+                }
+            },
+            "data_clumps": {
+                "details": [
+                    []
+                ],
+                "refactoring_example": {
+                    "before": "No example available",
+                    "after": "No example available"
+                }
+            },
+            "shotgun_surgery": {
+                "details": [
+                    "len",
+                    "jsonify"
+                ],
+                "refactoring_example": {
+                    "before": "No example available",
+                    "after": "No example available"
+                }
+            }
+        },
+        "correlated.py": {
+            "deeply_nested_functions": {
+                "details": [
+                    "correlated"
+                ],
+                "refactoring_example": {
+                    "before": "def process_data(data):\n    results = []\n    for item in data:\n        if item.is_valid():\n            if item.type == 'user':\n                if item.age >= 18:\n                    if item.has_permission:\n                        results.append(item.process())\n    return results",
+                    "after": "def meets_criteria(item):\n    return (item.is_valid() and \n            item.type == 'user' and \n            item.age >= 18 and \n            item.has_permission)\n\ndef process_data(data):\n    return [item.process() for item in data if meets_criteria(item)]"
+                }
+            },
+            "feature_envy": {
+                "details": [
+                    "generate_heatmap",
+                    "correlated"
+                ],
+                "refactoring_example": {
+                    "before": "class Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def calculate_discount(self):\n        if self.customer.loyalty_years > 5:\n            if self.customer.purchase_history > 1000:\n                return 0.2\n            return 0.1\n        return 0",
+                    "after": "class Customer:\n    def __init__(self, loyalty_years, purchase_history):\n        self.loyalty_years = loyalty_years\n        self.purchase_history = purchase_history\n    \n    def calculate_discount(self):\n        if self.loyalty_years > 5:\n            return 0.2 if self.purchase_history > 1000 else 0.1\n        return 0\n\nclass Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def get_discount(self):\n        return self.customer.calculate_discount()"
+                }
+            },
+            "data_clumps": {
+                "details": [
+                    [
+                        "df"
+                    ]
+                ],
+                "refactoring_example": {
+                    "before": "No example available",
+                    "after": "No example available"
+                }
+            }
+        },
+        "duplicates.py": {
+            "feature_envy": {
+                "details": [
+                    "duplicated"
+                ],
+                "refactoring_example": {
+                    "before": "class Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def calculate_discount(self):\n        if self.customer.loyalty_years > 5:\n            if self.customer.purchase_history > 1000:\n                return 0.2\n            return 0.1\n        return 0",
+                    "after": "class Customer:\n    def __init__(self, loyalty_years, purchase_history):\n        self.loyalty_years = loyalty_years\n        self.purchase_history = purchase_history\n    \n    def calculate_discount(self):\n        if self.loyalty_years > 5:\n            return 0.2 if self.purchase_history > 1000 else 0.1\n        return 0\n\nclass Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def get_discount(self):\n        return self.customer.calculate_discount()"
+                }
+            }
+        },
+        "imbalance.py": {
+            "high_complexity_functions": {
+                "details": [
+                    "generate_bargraph_class_imbal"
+                ],
+                "refactoring_example": {
+                    "before": "def complex_function(data):\n    result = 0\n    for item in data:\n        if item > 10:\n            if isinstance(item, int):\n                if item % 2 == 0:\n                    result += item * 2\n                else:\n                    result += item\n            else:\n                try:\n                    num = float(item)\n                    result += num\n                except:\n                    pass\n    return result",
+                    "after": "def is_valid_number(item):\n    return isinstance(item, (int, float)) or str(item).replace('.', '').isdigit()\n\ndef process_even_number(num):\n    return num * 2 if num % 2 == 0 else num\n\ndef process_item(item):\n    if not is_valid_number(item) or item <= 10:\n        return 0\n    try:\n        num = float(item) if isinstance(item, str) else item\n        return process_even_number(num) if isinstance(num, int) else num\n    except ValueError:\n        return 0\n\ndef refactored_function(data):\n    return sum(process_item(item) for item in data)"
+                }
+            },
+            "deeply_nested_functions": {
+                "details": [
+                    "binning_cat",
+                    "refactor_binning_cat",
+                    "class_imbal"
+                ],
+                "refactoring_example": {
+                    "before": "def process_data(data):\n    results = []\n    for item in data:\n        if item.is_valid():\n            if item.type == 'user':\n                if item.age >= 18:\n                    if item.has_permission:\n                        results.append(item.process())\n    return results",
+                    "after": "def meets_criteria(item):\n    return (item.is_valid() and \n            item.type == 'user' and \n            item.age >= 18 and \n            item.has_permission)\n\ndef process_data(data):\n    return [item.process() for item in data if meets_criteria(item)]"
+                }
+            },
+            "feature_envy": {
+                "details": [
+                    "class_imbal",
+                    "refactor_class_imbal",
+                    "generate_bargraph_class_imbal",
+                    "generate_bargraph_binning_cat"
+                ],
+                "refactoring_example": {
+                    "before": "class Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def calculate_discount(self):\n        if self.customer.loyalty_years > 5:\n            if self.customer.purchase_history > 1000:\n                return 0.2\n            return 0.1\n        return 0",
+                    "after": "class Customer:\n    def __init__(self, loyalty_years, purchase_history):\n        self.loyalty_years = loyalty_years\n        self.purchase_history = purchase_history\n    \n    def calculate_discount(self):\n        if self.loyalty_years > 5:\n            return 0.2 if self.purchase_history > 1000 else 0.1\n        return 0\n\nclass Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def get_discount(self):\n        return self.customer.calculate_discount()"
+                }
+            },
+            "data_clumps": {
+                "details": [
+                    [
+                        "df",
+                        "threshold"
+                    ],
+                    [
+                        "df"
+                    ]
+                ],
+                "refactoring_example": {
+                    "before": "No example available",
+                    "after": "No example available"
+                }
+            },
+            "shotgun_surgery": {
+                "details": [
+                    "len"
+                ],
+                "refactoring_example": {
+                    "before": "No example available",
+                    "after": "No example available"
+                }
+            }
+        },
+        "outliers.py": {
+            "deeply_nested_functions": {
+                "details": [
+                    "Outliers"
+                ],
+                "refactoring_example": {
+                    "before": "def process_data(data):\n    results = []\n    for item in data:\n        if item.is_valid():\n            if item.type == 'user':\n                if item.age >= 18:\n                    if item.has_permission:\n                        results.append(item.process())\n    return results",
+                    "after": "def meets_criteria(item):\n    return (item.is_valid() and \n            item.type == 'user' and \n            item.age >= 18 and \n            item.has_permission)\n\ndef process_data(data):\n    return [item.process() for item in data if meets_criteria(item)]"
+                }
+            },
+            "excessive_comments": {
+                "details": "40.37% comments",
+                "refactoring_example": {
+                    "before": "No example available",
+                    "after": "No example available"
+                }
+            },
+            "feature_envy": {
+                "details": [
+                    "generate_boxplot"
+                ],
+                "refactoring_example": {
+                    "before": "class Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def calculate_discount(self):\n        if self.customer.loyalty_years > 5:\n            if self.customer.purchase_history > 1000:\n                return 0.2\n            return 0.1\n        return 0",
+                    "after": "class Customer:\n    def __init__(self, loyalty_years, purchase_history):\n        self.loyalty_years = loyalty_years\n        self.purchase_history = purchase_history\n    \n    def calculate_discount(self):\n        if self.loyalty_years > 5:\n            return 0.2 if self.purchase_history > 1000 else 0.1\n        return 0\n\nclass Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def get_discount(self):\n        return self.customer.calculate_discount()"
+                }
+            },
+            "data_clumps": {
+                "details": [
+                    [
+                        "df"
+                    ]
+                ],
+                "refactoring_example": {
+                    "before": "No example available",
+                    "after": "No example available"
+                }
+            }
+        },
+        "sp_missingvalues.py": {
+            "high_complexity_functions": {
+                "details": [
+                    "SpecialMissingValues"
+                ],
+                "refactoring_example": {
+                    "before": "def complex_function(data):\n    result = 0\n    for item in data:\n        if item > 10:\n            if isinstance(item, int):\n                if item % 2 == 0:\n                    result += item * 2\n                else:\n                    result += item\n            else:\n                try:\n                    num = float(item)\n                    result += num\n                except:\n                    pass\n    return result",
+                    "after": "def is_valid_number(item):\n    return isinstance(item, (int, float)) or str(item).replace('.', '').isdigit()\n\ndef process_even_number(num):\n    return num * 2 if num % 2 == 0 else num\n\ndef process_item(item):\n    if not is_valid_number(item) or item <= 10:\n        return 0\n    try:\n        num = float(item) if isinstance(item, str) else item\n        return process_even_number(num) if isinstance(num, int) else num\n    except ValueError:\n        return 0\n\ndef refactored_function(data):\n    return sum(process_item(item) for item in data)"
+                }
+            },
+            "deeply_nested_functions": {
+                "details": [
+                    "SpecialMissingValues",
+                    "missing_values"
+                ],
+                "refactoring_example": {
+                    "before": "def process_data(data):\n    results = []\n    for item in data:\n        if item.is_valid():\n            if item.type == 'user':\n                if item.age >= 18:\n                    if item.has_permission:\n                        results.append(item.process())\n    return results",
+                    "after": "def meets_criteria(item):\n    return (item.is_valid() and \n            item.type == 'user' and \n            item.age >= 18 and \n            item.has_permission)\n\ndef process_data(data):\n    return [item.process() for item in data if meets_criteria(item)]"
+                }
+            },
+            "feature_envy": {
+                "details": [
+                    "generate_bargraph_special_missing_values",
+                    "generate_bargraph_nan_values",
+                    "SpecialMissingValues",
+                    "missing_values"
+                ],
+                "refactoring_example": {
+                    "before": "class Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def calculate_discount(self):\n        if self.customer.loyalty_years > 5:\n            if self.customer.purchase_history > 1000:\n                return 0.2\n            return 0.1\n        return 0",
+                    "after": "class Customer:\n    def __init__(self, loyalty_years, purchase_history):\n        self.loyalty_years = loyalty_years\n        self.purchase_history = purchase_history\n    \n    def calculate_discount(self):\n        if self.loyalty_years > 5:\n            return 0.2 if self.purchase_history > 1000 else 0.1\n        return 0\n\nclass Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def get_discount(self):\n        return self.customer.calculate_discount()"
+                }
+            },
+            "data_clumps": {
+                "details": [
+                    [
+                        "df"
+                    ]
+                ],
+                "refactoring_example": {
+                    "before": "No example available",
+                    "after": "No example available"
+                }
+            }
+        },
+        "stringsmells.py": {
+            "deeply_nested_functions": {
+                "details": [
+                    "detect_binary_missing_values",
+                    "detect_integer_as_string",
+                    "detect_special_characters",
+                    "refactor_special_char",
+                    "refactor_integer_as_string",
+                    "trailing_spaces",
+                    "human_friendly",
+                    "refactor_human_friendly"
+                ],
+                "refactoring_example": {
+                    "before": "def process_data(data):\n    results = []\n    for item in data:\n        if item.is_valid():\n            if item.type == 'user':\n                if item.age >= 18:\n                    if item.has_permission:\n                        results.append(item.process())\n    return results",
+                    "after": "def meets_criteria(item):\n    return (item.is_valid() and \n            item.type == 'user' and \n            item.age >= 18 and \n            item.has_permission)\n\ndef process_data(data):\n    return [item.process() for item in data if meets_criteria(item)]"
+                }
+            },
+            "too_many_returns": {
+                "details": [
+                    "detect_integer_as_string",
+                    "refactor_integer_as_string"
+                ],
+                "refactoring_example": {
+                    "before": "def check_user_access(user):\n    if not user:\n        return False\n    if not user.is_active:\n        return False\n    if user.is_banned:\n        return False\n    if not user.has_permission('access'):\n        return False\n    if user.login_attempts > 3:\n        return False\n    return True",
+                    "after": "def check_user_access(user):\n    conditions = [\n        bool(user),\n        user.is_active,\n        not user.is_banned,\n        user.has_permission('access'),\n        user.login_attempts <= 3\n    ]\n    return all(conditions)"
+                }
+            },
+            "feature_envy": {
+                "details": [
+                    "generate_bargraph_special_characters",
+                    "generate_bargraph_trailing_spaces",
+                    "generate_bargraph_human_friendly"
+                ],
+                "refactoring_example": {
+                    "before": "class Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def calculate_discount(self):\n        if self.customer.loyalty_years > 5:\n            if self.customer.purchase_history > 1000:\n                return 0.2\n            return 0.1\n        return 0",
+                    "after": "class Customer:\n    def __init__(self, loyalty_years, purchase_history):\n        self.loyalty_years = loyalty_years\n        self.purchase_history = purchase_history\n    \n    def calculate_discount(self):\n        if self.loyalty_years > 5:\n            return 0.2 if self.purchase_history > 1000 else 0.1\n        return 0\n\nclass Order:\n    def __init__(self, customer):\n        self.customer = customer\n    \n    def get_discount(self):\n        return self.customer.calculate_discount()"
+                }
+            },
+            "data_clumps": {
+                "details": [
+                    [
+                        "cell"
+                    ],
+                    [
+                        "df"
+                    ]
+                ],
+                "refactoring_example": {
+                    "before": "No example available",
+                    "after": "No example available"
+                }
+            },
+            "shotgun_surgery": {
+                "details": [
+                    "len"
+                ],
+                "refactoring_example": {
+                    "before": "No example available",
+                    "after": "No example available"
+                }
+            }
+        },
+        "ui.py": {
+            "excessive_comments": {
+                "details": "100.00% comments",
+                "refactoring_example": {
+                    "before": "No example available",
+                    "after": "No example available"
+                }
+            }
+        }
+    },
+    "javascript": {
+        "App.js": {
+            "Magic Numbers Found": {
+                "details": [
+                    "2023",
+                    "2",
+                    "8"
+                ],
+                "refactoring_example": {
+                    "before": "function calculatePrice(quantity) {\n    if (quantity > 10) {\n        return quantity * 5.99 * 0.9;\n    }\n    return quantity * 5.99;\n}\n\nsetTimeout(checkStatus, 300000);",
+                    "after": "const PRICES = {\n    UNIT_PRICE: 5.99,\n    BULK_DISCOUNT: 0.9,\n    BULK_THRESHOLD: 10\n};\n\nconst TIMEOUTS = {\n    STATUS_CHECK: 5 * 60 * 1000 // 5 minutes in milliseconds\n};\n\nfunction calculatePrice(quantity) {\n    const basePrice = quantity * PRICES.UNIT_PRICE;\n    return quantity > PRICES.BULK_THRESHOLD \n        ? basePrice * PRICES.BULK_DISCOUNT \n        : basePrice;\n}\n\nsetTimeout(checkStatus, TIMEOUTS.STATUS_CHECK);"
+                }
+            }
+        },
+        "App.test.js": {
+            "Global Variables Found": {
+                "details": [
+                    "linkElement"
+                ],
+                "refactoring_example": {
+                    "before": "// script.js\nvar users = [];\nvar config = { apiUrl: 'https://api.example.com' };\n\nfunction addUser(user) {\n    users.push(user);\n}\n\nfunction getConfig() {\n    return config;\n}",
+                    "after": "// users.js\nexport class UserManager {\n    constructor() {\n        this.users = [];\n    }\n    \n    addUser(user) {\n        this.users.push(user);\n    }\n}\n\n// config.js\nexport const config = {\n    apiUrl: 'https://api.example.com'\n};\n\n// main.js\nimport { UserManager } from './users';\nimport { config } from './config';\n\nconst userManager = new UserManager();"
+                }
+            }
+        },
+        "index.js": {
+            "Global Variables Found": {
+                "details": [
+                    "root"
+                ],
+                "refactoring_example": {
+                    "before": "// script.js\nvar users = [];\nvar config = { apiUrl: 'https://api.example.com' };\n\nfunction addUser(user) {\n    users.push(user);\n}\n\nfunction getConfig() {\n    return config;\n}",
+                    "after": "// users.js\nexport class UserManager {\n    constructor() {\n        this.users = [];\n    }\n    \n    addUser(user) {\n        this.users.push(user);\n    }\n}\n\n// config.js\nexport const config = {\n    apiUrl: 'https://api.example.com'\n};\n\n// main.js\nimport { UserManager } from './users';\nimport { config } from './config';\n\nconst userManager = new UserManager();"
+                }
+            }
+        },
+        "reportWebVitals.js": {
+            "Global Variables Found": {
+                "details": [
+                    "reportWebVitals"
+                ],
+                "refactoring_example": {
+                    "before": "// script.js\nvar users = [];\nvar config = { apiUrl: 'https://api.example.com' };\n\nfunction addUser(user) {\n    users.push(user);\n}\n\nfunction getConfig() {\n    return config;\n}",
+                    "after": "// users.js\nexport class UserManager {\n    constructor() {\n        this.users = [];\n    }\n    \n    addUser(user) {\n        this.users.push(user);\n    }\n}\n\n// config.js\nexport const config = {\n    apiUrl: 'https://api.example.com'\n};\n\n// main.js\nimport { UserManager } from './users';\nimport { config } from './config';\n\nconst userManager = new UserManager();"
+                }
+            }
+        },
+        "setupTests.js": {},
+        "Codebox.js": {
+            "Global Variables Found": {
+                "details": [
+                    "Codebox",
+                    "handleCopyClick",
+                    "snippet",
+                    "language"
+                ],
+                "refactoring_example": {
+                    "before": "// script.js\nvar users = [];\nvar config = { apiUrl: 'https://api.example.com' };\n\nfunction addUser(user) {\n    users.push(user);\n}\n\nfunction getConfig() {\n    return config;\n}",
+                    "after": "// users.js\nexport class UserManager {\n    constructor() {\n        this.users = [];\n    }\n    \n    addUser(user) {\n        this.users.push(user);\n    }\n}\n\n// config.js\nexport const config = {\n    apiUrl: 'https://api.example.com'\n};\n\n// main.js\nimport { UserManager } from './users';\nimport { config } from './config';\n\nconst userManager = new UserManager();"
+                }
+            },
+            "Magic Numbers Found": {
+                "details": [
+                    "2000"
+                ],
+                "refactoring_example": {
+                    "before": "function calculatePrice(quantity) {\n    if (quantity > 10) {\n        return quantity * 5.99 * 0.9;\n    }\n    return quantity * 5.99;\n}\n\nsetTimeout(checkStatus, 300000);",
+                    "after": "const PRICES = {\n    UNIT_PRICE: 5.99,\n    BULK_DISCOUNT: 0.9,\n    BULK_THRESHOLD: 10\n};\n\nconst TIMEOUTS = {\n    STATUS_CHECK: 5 * 60 * 1000 // 5 minutes in milliseconds\n};\n\nfunction calculatePrice(quantity) {\n    const basePrice = quantity * PRICES.UNIT_PRICE;\n    return quantity > PRICES.BULK_THRESHOLD \n        ? basePrice * PRICES.BULK_DISCOUNT \n        : basePrice;\n}\n\nsetTimeout(checkStatus, TIMEOUTS.STATUS_CHECK);"
+                }
+            },
+            "Duplicate Code": {
+                "details": [
+                    "('            color: #ddd;', '            font-size: 1.2rem;', '          }')"
+                ],
+                "refactoring_example": {
+                    "before": "No example available",
+                    "after": "No example available"
+                }
+            }
+        },
+        "data.js": {
+            "Magic Numbers Found": {
+                "details": [
+                    "07",
+                    "015",
+                    "8529",
+                    "2",
+                    "7",
+                    "3",
+                    "016",
+                    "17866",
+                    "9",
+                    "09",
+                    "4",
+                    "015",
+                    "13853",
+                    "9",
+                    "12",
+                    "5",
+                    "017",
+                    "2338",
+                    "4",
+                    "10",
+                    "8",
+                    "014",
+                    "9578",
+                    "5",
+                    "7",
+                    "017",
+                    "19141",
+                    "2",
+                    "7",
+                    "12",
+                    "015",
+                    "6543",
+                    "11",
+                    "4",
+                    "014",
+                    "13035",
+                    "6",
+                    "05",
+                    "2",
+                    "014",
+                    "18488",
+                    "12",
+                    "014",
+                    "12317",
+                    "4",
+                    "12",
+                    "8",
+                    "013",
+                    "6230",
+                    "3",
+                    "02",
+                    "2",
+                    "015",
+                    "9709",
+                    "9",
+                    "11",
+                    "9",
+                    "014",
+                    "9766",
+                    "02",
+                    "8",
+                    "014",
+                    "7685",
+                    "9",
+                    "08",
+                    "5",
+                    "016",
+                    "18012",
+                    "5",
+                    "05",
+                    "016",
+                    "2785",
+                    "9",
+                    "12",
+                    "016",
+                    "9967",
+                    "4",
+                    "10",
+                    "3",
+                    "014",
+                    "5584",
+                    "3",
+                    "12",
+                    "4",
+                    "015",
+                    "5286",
+                    "3",
+                    "11",
+                    "013",
+                    "13511",
+                    "11",
+                    "9",
+                    "013",
+                    "6498",
+                    "9",
+                    "10",
+                    "014",
+                    "10359",
+                    "7",
+                    "04",
+                    "6",
+                    "018",
+                    "8118",
+                    "9",
+                    "10",
+                    "3",
+                    "016",
+                    "10204",
+                    "7",
+                    "10",
+                    "2",
+                    "013",
+                    "6528",
+                    "6",
+                    "9",
+                    "2",
+                    "014",
+                    "5619",
+                    "5",
+                    "05",
+                    "2",
+                    "016",
+                    "5091",
+                    "3",
+                    "09",
+                    "3",
+                    "018",
+                    "14566",
+                    "8",
+                    "2",
+                    "2",
+                    "018",
+                    "5284",
+                    "7"
+                ],
+                "refactoring_example": {
+                    "before": "function calculatePrice(quantity) {\n    if (quantity > 10) {\n        return quantity * 5.99 * 0.9;\n    }\n    return quantity * 5.99;\n}\n\nsetTimeout(checkStatus, 300000);",
+                    "after": "const PRICES = {\n    UNIT_PRICE: 5.99,\n    BULK_DISCOUNT: 0.9,\n    BULK_THRESHOLD: 10\n};\n\nconst TIMEOUTS = {\n    STATUS_CHECK: 5 * 60 * 1000 // 5 minutes in milliseconds\n};\n\nfunction calculatePrice(quantity) {\n    const basePrice = quantity * PRICES.UNIT_PRICE;\n    return quantity > PRICES.BULK_THRESHOLD \n        ? basePrice * PRICES.BULK_DISCOUNT \n        : basePrice;\n}\n\nsetTimeout(checkStatus, TIMEOUTS.STATUS_CHECK);"
+                }
+            }
+        },
+        "Excel.js": {
+            "Magic Numbers Found": {
+                "details": [
+                    "9",
+                    "9",
+                    "160",
+                    "130",
+                    "130",
+                    "130",
+                    "120",
+                    "120"
+                ],
+                "refactoring_example": {
+                    "before": "function calculatePrice(quantity) {\n    if (quantity > 10) {\n        return quantity * 5.99 * 0.9;\n    }\n    return quantity * 5.99;\n}\n\nsetTimeout(checkStatus, 300000);",
+                    "after": "const PRICES = {\n    UNIT_PRICE: 5.99,\n    BULK_DISCOUNT: 0.9,\n    BULK_THRESHOLD: 10\n};\n\nconst TIMEOUTS = {\n    STATUS_CHECK: 5 * 60 * 1000 // 5 minutes in milliseconds\n};\n\nfunction calculatePrice(quantity) {\n    const basePrice = quantity * PRICES.UNIT_PRICE;\n    return quantity > PRICES.BULK_THRESHOLD \n        ? basePrice * PRICES.BULK_DISCOUNT \n        : basePrice;\n}\n\nsetTimeout(checkStatus, TIMEOUTS.STATUS_CHECK);"
+                }
+            }
+        },
+        "form.js": {
+            "Global Variables Found": {
+                "details": [
+                    "RegExForm",
+                    "handleCheckboxChange",
+                    "handleSubmit",
+                    "handleChangeRegex",
+                    "handleChangeColNum",
+                    "sentences"
+                ],
+                "refactoring_example": {
+                    "before": "// script.js\nvar users = [];\nvar config = { apiUrl: 'https://api.example.com' };\n\nfunction addUser(user) {\n    users.push(user);\n}\n\nfunction getConfig() {\n    return config;\n}",
+                    "after": "// users.js\nexport class UserManager {\n    constructor() {\n        this.users = [];\n    }\n    \n    addUser(user) {\n        this.users.push(user);\n    }\n}\n\n// config.js\nexport const config = {\n    apiUrl: 'https://api.example.com'\n};\n\n// main.js\nimport { UserManager } from './users';\nimport { config } from './config';\n\nconst userManager = new UserManager();"
+                }
+            },
+            "Magic Numbers Found": {
+                "details": [
+                    "127",
+                    "5000",
+                    "2"
+                ],
+                "refactoring_example": {
+                    "before": "function calculatePrice(quantity) {\n    if (quantity > 10) {\n        return quantity * 5.99 * 0.9;\n    }\n    return quantity * 5.99;\n}\n\nsetTimeout(checkStatus, 300000);",
+                    "after": "const PRICES = {\n    UNIT_PRICE: 5.99,\n    BULK_DISCOUNT: 0.9,\n    BULK_THRESHOLD: 10\n};\n\nconst TIMEOUTS = {\n    STATUS_CHECK: 5 * 60 * 1000 // 5 minutes in milliseconds\n};\n\nfunction calculatePrice(quantity) {\n    const basePrice = quantity * PRICES.UNIT_PRICE;\n    return quantity > PRICES.BULK_THRESHOLD \n        ? basePrice * PRICES.BULK_DISCOUNT \n        : basePrice;\n}\n\nsetTimeout(checkStatus, TIMEOUTS.STATUS_CHECK);"
+                }
+            },
+            "Duplicate Code": {
+                "details": [
+                    "('            <input', '              type=\"text\"', '              name=\"regexrow\"')",
+                    "('              type=\"text\"', '              name=\"regexrow\"', '              className=\"field\"')"
+                ],
+                "refactoring_example": {
+                    "before": "No example available",
+                    "after": "No example available"
+                }
+            },
+            "Unused Variables": {
+                "details": [
+                    "RegExForm",
+                    "handleCheckboxChange"
+                ],
+                "refactoring_example": {
+                    "before": "function processData(data) {\n    let temp = data.map(x => x * 2);  // Unused variable\n    let result = data.filter(x => x > 10);\n    return result;\n}",
+                    "after": "function processData(data) {\n    // Remove unused variable and directly return filtered result\n    return data.filter(x => x > 10);\n}"
+                }
+            }
+        }
+    }
+}
