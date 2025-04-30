@@ -7,7 +7,7 @@
         return;
     }
     const repoPath = window.location.pathname.split('/').slice(1, 3).join('/');
-    const repoUrl = https://github.com/${repoPath};
+    const repoUrl = `https://github.com/${repoPath}`;
     console.log("[EXTENSION] Analyzing repository:", repoUrl);
 
     try {
