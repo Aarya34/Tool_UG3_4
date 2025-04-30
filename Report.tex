@@ -1,0 +1,469 @@
+%%
+%% This is file `code-smell-detector.tex'
+%%
+
+\documentclass[sigconf,screen]{acmart}
+
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
+
+\setcopyright{acmcopyright}
+\copyrightyear{2025}
+\acmYear{2025}
+\acmDOI{10.1145/1122334.5566778}
+
+\acmConference[CSS '25]{2025 ACM Conference on Code Quality and Software Security}{April 15--17, 2025}{San Francisco, CA}
+\acmBooktitle{CSS '25: 2025 ACM Conference on Code Quality and Software Security, April 15--17, 2025, San Francisco, CA}
+\acmPrice{15.00}
+\acmISBN{978-1-4503-XXXX-X/25/04}
+
+
+\begin{document}
+
+\title{SmellSeeker: A Tool for Automated Detection and Refactoring of Code Smells in JavaScript and Python}
+
+% \author{Aarya Ch}
+% \authornote{Both authors contributed equally to this research.}
+\author{Akshatha R H}
+\email{cs22b003@iittp.ac.in}
+\affiliation{%
+  \institution{Indian Institute of Technology Tirupati}
+  \streetaddress{Yerpedu - Venkatagiri Rd}
+  \city{Tirupati}
+  \state{Andhra Pradesh}
+  \country{India}
+  \postcode{517619}
+}
+
+\author{A Sai Preethika}
+\email{cs22b006@iittp.ac.in}
+\affiliation{%
+  \institution{Indian Institute of Technology Tirupati}
+  \streetaddress{Yerpedu - Venkatagiri Rd}
+  \city{Tirupati}
+  \state{Andhra Pradesh}
+  \country{India}
+  \postcode{517619}
+}
+
+\author{Ch Aarya}
+\email{cs22b018@iittp.ac.in}
+\orcid{1234-5678-9012}
+\affiliation{%
+  \institution{Indian Institute of Technology Tirupati}
+  \streetaddress{Yerpedu - Venkatagiri Rd}
+  \city{Tirupati}
+  \state{Andhra Pradesh}
+  \country{India}
+  \postcode{517619}
+}
+
+\author{K Sanjay Varshith}
+\email{cs22b029@iittp.ac.in}
+\affiliation{%
+  \institution{Indian Institute of Technology Tirupati}
+  \streetaddress{Yerpedu - Venkatagiri Rd}
+  \city{Tirupati}
+  \state{Andhra Pradesh}
+  \country{India}
+  \postcode{517619}
+}
+
+\author{K Akhil Solomon}
+\email{cs22b032@iittp.ac.in}
+\affiliation{%
+  \institution{Indian Institute of Technology Tirupati}
+  \streetaddress{Yerpedu - Venkatagiri Rd}
+  \city{Tirupati}
+  \state{Andhra Pradesh}
+  \country{India}
+  \postcode{517619}
+}
+
+\author{M Akash}
+\email{cs22b037@iittp.ac.in}
+\affiliation{%
+  \institution{Indian Institute of Technology Tirupati}
+  \streetaddress{Yerpedu - Venkatagiri Rd}
+  \city{Tirupati}
+  \state{Andhra Pradesh}
+  \country{India}
+  \postcode{517619}
+}
+
+
+\renewcommand{\shortauthors}{Ch Aarya, et al.}
+
+\begin{abstract}
+  Code quality is a critical factor in software development that impacts maintainability, readability, and long-term project sustainability. This paper presents SmellSeeker, a novel browser-based tool that automatically detects code smells in GitHub repositories for Python and JavaScript codebases. The tool implements a comprehensive system to identify 30 different code smells through static code analysis and rule-based heuristics. SmellSeeker integrates directly with GitHub's user interface as a Chrome extension, providing developers with immediate feedback on code quality issues without disrupting their workflow. The tool also generates detailed reports and suggests potential refactoring strategies to address detected issues. Our evaluation shows that SmellSeeker can effectively identify common code smells across diverse repositories with high precision, making it a valuable addition to developers' quality assurance toolkit. By highlighting problematic patterns at the browsing stage, SmellSeeker aims to encourage better coding practices and facilitate continuous code improvement in open-source projects.
+\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+ <concept>
+  <concept_id>10011007.10011006.10011008</concept_id>
+  <concept_desc>Software and its engineering~Software maintenance tools</concept_desc>
+  <concept_significance>500</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10011007.10010940</concept_id>
+  <concept_desc>Software and its engineering~Software development techniques</concept_desc>
+  <concept_significance>300</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10011007.10011074.10011099</concept_id>
+  <concept_desc>Software and its engineering~Software quality analysis</concept_desc>
+  <concept_significance>300</concept_significance>
+ </concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Software and its engineering~Software maintenance tools}
+\ccsdesc[300]{Software and its engineering~Software development techniques}
+\ccsdesc[300]{Software and its engineering~Software quality analysis}
+
+\keywords{code smells, static analysis, software quality, browser extension, code refactoring, Python, JavaScript}
+
+\maketitle
+
+\section{Introduction}
+
+Code smells are symptoms in the source code that potentially indicate deeper problems \cite{fowler1999refactoring}. They are not bugs themselves but rather indicators of poor design or implementation choices that may lead to technical debt, decreased maintainability, and increased likelihood of bugs in the future. While experienced developers might instinctively recognize these patterns, novice programmers and even seasoned professionals working under time constraints often overlook them.
+
+The growing popularity of platforms like GitHub for collaborative software development has increased the importance of maintaining high code quality in public repositories. However, integrating code quality tools into the development workflow often requires explicit installation, configuration, and execution steps that create friction and reduce adoption rates.
+
+In this paper, we present SmellSeeker, a browser-based tool that seamlessly integrates with GitHub's interface to detect code smells directly during repository browsing. The primary contributions of this work are:
+
+\begin{itemize}
+    \item A comprehensive catalog of 30 code smells for JavaScript and Python with their detection heuristics
+    \item A browser extension that integrates code smell detection directly into the GitHub browsing experience
+    \item A dual-component architecture that combines client-side interface modifications with server-side static analysis
+    \item An automated report generation system providing actionable insights for code improvement
+    \item A semi-automatic refactoring suggestion framework that guides developers in resolving identified issues
+\end{itemize}
+
+This tool is designed with ease of use and developer experience at its core, requiring minimal setup while providing maximum value. By making code smell detection an integral part of the browsing experience, we aim to improve code quality awareness and encourage better coding practices within the open-source community.
+
+\section{Related Work}
+
+Research on code smell detection and automated refactoring has evolved significantly over the past two decades. The concept of code smells was popularized by Martin Fowler in his seminal work "Refactoring: Improving the Design of Existing Code" \cite{fowler1999refactoring}, which laid the foundation for identifying problematic patterns in source code.
+
+\subsection{Code Smell Detection Tools}
+
+Several tools have been developed to automatically detect code smells. PMD \cite{pmd2021} and FindBugs \cite{ayewah2008using} are static analysis tools that can identify various code quality issues in Java code. For JavaScript, ESLint \cite{eslint2021} has become a standard tool that provides rule-based pattern detection. For Python, Pylint \cite{pylint2021} and Flake8 \cite{flake82021} offer similar capabilities.
+
+However, most of these tools operate as standalone applications or IDE plugins, requiring explicit integration into the development workflow. Fontana et al. \cite{fontana2012comparing} conducted a comparative analysis of various code smell detection tools and found significant variations in their detection capabilities and accuracy.
+
+\subsection{Browser-Based Code Analysis}
+
+The concept of performing code analysis directly in the browser has gained traction with tools like SourceGraph \cite{sourcegraph2021} and GitHub's own CodeQL \cite{codeql2021}. However, these solutions typically focus on code navigation and security vulnerabilities rather than code quality issues.
+
+SonarLint \cite{sonarlint2021} offers a browser extension for code quality analysis, but it primarily targets integrated development within IDEs rather than browsing experiences on code hosting platforms.
+
+\subsection{GitHub Integrations}
+
+GitHub has become a central platform for open-source development, leading to numerous integrations aimed at improving code quality. Services like CodeClimate \cite{codeclimate2021} and Codacy \cite{codacy2021} provide automated code reviews through GitHub integrations. However, these typically operate at the pull request or commit level rather than offering real-time feedback during browsing.
+
+Our work differs from these approaches by bringing code smell detection directly into the browsing experience on GitHub, providing immediate feedback without requiring repository cloning, CI/CD integration, or explicit tool invocation.
+
+\section{Design and Development}
+
+SmellSeeker employs a dual-component architecture consisting of a Chrome extension for frontend interactions and a Python-based backend server for code analysis. This separation allows for lightweight client-side components while enabling sophisticated static analysis on the server.
+
+\subsection{System Architecture}
+
+The overall architecture of SmellSeeker is illustrated in Figure 1. The system comprises:
+
+\begin{itemize}
+    \item \textbf{Chrome Extension}: Injects custom UI elements into GitHub pages and handles user interactions
+    \item \textbf{Backend Server}: Processes repository analysis requests and performs static code analysis
+    \item \textbf{Code Smell Detector}: Core analysis engine that identifies code smells in Python and JavaScript files
+    \item \textbf{Refactoring Suggester}: Component that generates improvement recommendations for identified smells
+\end{itemize}
+
+The extension communicates with the backend server via HTTP requests, sending repository information and receiving analysis results. This design ensures that intensive computation happens server-side while maintaining a responsive user interface.
+
+\subsection{Code Smell Detection Methods}
+
+SmellSeeker employs various techniques to detect code smells:
+
+\subsubsection{Abstract Syntax Tree (AST) Analysis}
+
+For Python code, we utilize the built-in \texttt{ast} module to parse source code into an abstract syntax tree. This structured representation allows for detailed analysis of:
+
+\begin{itemize}
+    \item Function complexity and nesting depth
+    \item Variable usage patterns to identify dead code
+    \item Class structure to detect large classes and feature envy
+    \item Lambda expressions and their complexity
+\end{itemize}
+
+This AST-based approach enables precise identification of structural code smells that would be difficult to detect with simple pattern matching.
+
+\subsubsection{Metrics-Based Analysis}
+
+For quantitative assessment, we calculate several established code quality metrics:
+
+\begin{itemize}
+    \item McCabe's Cyclomatic Complexity using the \texttt{radon.complexity} module
+    \item Halstead metrics to assess cognitive complexity using \texttt{radon.metrics}
+    \item Maintainability Index to gauge overall code maintainability
+    \item Raw metrics like line count, comment ratio, and function size
+\end{itemize}
+
+These metrics provide objective thresholds for identifying issues like overly complex functions or poorly maintained code sections.
+
+\subsubsection{Pattern Recognition}
+
+For JavaScript files, we employ regular expression-based pattern matching to identify:
+
+\begin{itemize}
+    \item Global variable declarations
+    \item Magic number usage
+    \item Duplicate code blocks
+    \item Unused variable declarations
+    \item Callback nesting (callback hell)
+\end{itemize}
+
+While less precise than AST-based analysis, this approach offers reasonable detection capabilities for common JavaScript issues without requiring full parsing.
+
+\subsection{Frontend Integration}
+
+The Chrome extension seamlessly integrates with GitHub's user interface by:
+
+\begin{itemize}
+    \item Injecting small information icons next to file and folder names
+    \item Creating popup displays for showing detected code smells
+    \item Adding an extension icon to toggle functionality on and off
+    \item Highlighting problematic code areas based on detection results
+\end{itemize}
+
+This non-intrusive approach ensures that developers' browsing experience remains familiar while adding valuable code quality insights.
+
+\subsection{Refactoring Suggestion Engine}
+
+Beyond mere detection, SmellSeeker also provides guidance on resolving identified issues. For each detected smell, the system offers:
+
+\begin{itemize}
+    \item A description of the problem and its potential impact
+    \item Code examples showing refactoring strategies
+    \item Automated refactoring suggestions for straightforward cases
+    \item Links to best practice documentation for complex scenarios
+\end{itemize}
+
+These suggestions help developers not only identify problems but also learn how to address them effectively.
+
+\section{User Scenario}
+
+To illustrate the functionality of SmellSeeker, we present a typical usage scenario:
+
+\begin{enumerate}
+    \item A developer navigates to a GitHub repository of interest in Chrome
+    \item The developer activates the SmellSeeker extension by clicking its icon
+    \item Small information icons appear next to each file and folder in the repository
+    \item The developer clicks on an information icon next to a Python file
+    \item A popup appears showing detected code smells in that file, including:
+        \begin{itemize}
+            \item Two functions with high cyclomatic complexity
+            \item One instance of duplicate code
+            \item Three unusually deep nested functions
+            \item One function with too many parameters
+        \end{itemize}
+    \item The developer clicks on one of the smell instances for more details
+    \item SmellSeeker displays:
+        \begin{itemize}
+            \item The code section containing the smell
+            \item An explanation of why it's problematic
+            \item A suggested refactoring approach
+            \item Sample code showing the refactored version
+        \end{itemize}
+    \item The developer can apply this knowledge to improve the code
+\end{enumerate}
+
+This seamless integration into the browsing workflow enables developers to gain insights into code quality issues without disrupting their exploration of the repository.
+
+\section{Implementation Details}
+
+\subsection{Chrome Extension}
+
+The frontend Chrome extension is implemented using JavaScript, HTML, and CSS. It consists of:
+
+\begin{itemize}
+    \item A background script that handles extension activation and communication with the backend
+    \item A content script that injects UI elements into GitHub pages
+    \item A popup interface for configuring the extension
+    \item Custom CSS for styling the inserted UI elements
+\end{itemize}
+
+The extension uses the Chrome Extension Manifest V3, providing a modern and secure architecture for browser integration.
+
+\subsection{Backend Server}
+
+The backend is implemented in Python using a simple HTTP server that:
+
+\begin{itemize}
+    \item Receives analysis requests with repository URLs
+    \item Clones repositories to a temporary directory
+    \item Performs static analysis on relevant files
+    \item Generates detailed reports of detected smells
+    \item Returns analysis results to the extension
+\end{itemize}
+
+For repository management, we use the \texttt{git} Python package to handle cloning and navigation.
+
+\subsection{Code Smell Detection}
+
+The core detection logic varies by language:
+
+\subsubsection{Python Smell Detection}
+
+For Python, we use:
+
+\begin{itemize}
+    \item The \texttt{ast} module for structural analysis
+    \item \texttt{radon} for complexity and maintainability metrics
+    \item Custom detection logic for language-specific patterns
+\end{itemize}
+
+The system implements detection for 16 different Python code smells, including high complexity functions, large files, deep nesting, and more.
+
+\subsubsection{JavaScript Smell Detection}
+
+For JavaScript analysis, we primarily use:
+
+\begin{itemize}
+    \item Regular expressions for pattern matching
+    \item Line and character counting for size-based metrics
+    \item Structure analysis for detecting nesting levels
+\end{itemize}
+
+The system detects 14 JavaScript code smells, including callback hell, unused variables, and duplicate code.
+
+\subsection{Refactoring Suggestions}
+
+The refactoring suggestion module uses:
+
+\begin{itemize}
+    \item Template-based code transformation
+    \item AST manipulation for Python code
+    \item Regular expression-based replacement for JavaScript
+\end{itemize}
+
+These approaches enable generating contextual suggestions that are specific to the detected code smells.
+
+\section{Discussion \& Limitations}
+
+While SmellSeeker provides valuable code quality insights, there are several limitations to consider:
+
+\subsection{Analysis Accuracy}
+
+Static analysis without execution context can lead to:
+
+\begin{itemize}
+    \item False positives, especially for intentional patterns that mimic smells
+    \item Missed smells that depend on runtime behavior
+    \item Imprecise detection in dynamically typed languages like JavaScript
+\end{itemize}
+
+Our pattern-based approach for JavaScript is particularly susceptible to these limitations compared to the more robust AST-based analysis for Python.
+
+\subsection{Performance Considerations}
+
+The current implementation has performance limitations:
+
+\begin{itemize}
+    \item Repository cloning can be slow for large repositories
+    \item Complex analysis may cause delays in result delivery
+    \item The synchronous nature of the analysis process can impact responsiveness
+\end{itemize}
+
+Future versions could address these by implementing incremental analysis, background processing, and caching mechanisms.
+
+\subsection{Language Support}
+
+Currently, SmellSeeker supports only Python and JavaScript. Many repositories use multiple languages, limiting the tool's utility in polyglot projects. Additionally, the analysis depth varies between the two supported languages.
+
+\subsection{GitHub Integration Limitations}
+
+As a browser extension, SmellSeeker depends on GitHub's HTML structure. Changes to GitHub's interface may break the extension's functionality, requiring updates.
+
+\subsection{Refactoring Suggestions}
+
+While the tool provides refactoring suggestions, it cannot account for:
+
+\begin{itemize}
+    \item Project-specific architectural constraints
+    \item Team coding conventions that may override standard practices
+    \item Context-specific justifications for apparent code smells
+\end{itemize}
+
+Human judgment remains essential when applying the suggested refactorings.
+
+\section{Conclusion and Future Work}
+
+This paper presented SmellSeeker, a browser-based tool for detecting code smells in GitHub repositories. By integrating directly into the GitHub browsing experience, SmellSeeker provides immediate feedback on code quality issues without requiring additional tools or workflow changes.
+
+Our implementation demonstrates the feasibility of performing meaningful code quality analysis within the browsing context. The dual-component architecture balances user experience with analysis depth, while the comprehensive catalog of code smells addresses common issues in both Python and JavaScript codebases.
+
+Future work could extend SmellSeeker in several directions:
+
+\begin{itemize}
+    \item \textbf{Expanded Language Support}: Adding detection capabilities for additional languages such as Java, C++, and TypeScript
+    \item \textbf{Machine Learning Integration}: Using ML techniques to improve detection accuracy and reduce false positives
+    \item \textbf{Collaborative Features}: Enabling teams to share and track code smell resolution across repositories
+    \item \textbf{Historical Analysis}: Tracking code quality trends over time through commit history analysis
+    \item \textbf{IDE Integration}: Extending the tool to work within popular development environments
+    \item \textbf{Pull Request Integration}: Automatically commenting on pull requests when they introduce new code smells
+\end{itemize}
+
+By making code quality analysis an integral part of the repository browsing experience, SmellSeeker aims to raise awareness of code smells and encourage better coding practices in the open-source community.
+
+\balance
+\bibliographystyle{ACM-Reference-Format}
+\begin{thebibliography}{00}
+\bibitem{fowler1999refactoring} Fowler, M. (1999). Refactoring: Improving the Design of Existing Code. Addison-Wesley Professional.
+
+\bibitem{pmd2021} PMD. (2021). An extensible cross-language static code analyzer. https://pmd.github.io/
+
+\bibitem{ayewah2008using} Ayewah, N., Pugh, W., Hovemeyer, D., Morgenthaler, J. D., \& Penix, J. (2008). Using static analysis to find bugs. IEEE Software, 25(5), 22-29.
+
+\bibitem{eslint2021} ESLint. (2021). Find and fix problems in your JavaScript code. https://eslint.org/
+
+\bibitem{pylint2021} Pylint. (2021). A Python static code analysis tool. https://pylint.org/
+
+\bibitem{flake82021} Flake8. (2021). Your Tool For Style Guide Enforcement. https://flake8.pycqa.org/
+
+\bibitem{fontana2012comparing} Fontana, F. A., Mariani, E., Mornioli, A., Sormani, R., \& Tonella, A. (2012). Comparing and experimenting machine learning techniques for code smell detection. Empirical Software Engineering, 18(6), 1040-1083.
+
+\bibitem{sourcegraph2021} Sourcegraph. (2021). Universal code search. https://sourcegraph.com/
+
+\bibitem{codeql2021} GitHub CodeQL. (2021). Semantic code analysis engine. https://codeql.github.com/
+
+\bibitem{sonarlint2021} SonarLint. (2021). Clean code begins in your IDE. https://www.sonarlint.org/
+
+\bibitem{codeclimate2021} Code Climate. (2021). Velocity engineering metrics. https://codeclimate.com/
+
+\bibitem{codacy2021} Codacy. (2021). Automated code reviews \& code analytics. https://www.codacy.com/
+
+\bibitem{johnson2013don} Johnson, B., Song, Y., Murphy-Hill, E., \& Bowdidge, R. (2013). Why don't software developers use static analysis tools to find bugs?. In 2013 35th International Conference on Software Engineering (ICSE) (pp. 672-681). IEEE.
+
+\bibitem{palomba2018diffuseness} Palomba, F., Bavota, G., Di Penta, M., Oliveto, R., De Lucia, A., \& Poshyvanyk, D. (2018). Detecting bad smells in source code using change history information. In 2013 28th IEEE/ACM International Conference on Automated Software Engineering (ASE) (pp. 268-278). IEEE.
+
+\bibitem{tufano2017there} Tufano, M., Palomba, F., Bavota, G., Oliveto, R., Di Penta, M., De Lucia, A., \& Poshyvanyk, D. (2017). When and why your code starts to smell bad (and whether the smells go away). IEEE Transactions on Software Engineering, 43(11), 1063-1088.
+
+\bibitem{marinescu2017good} Marinescu, R. (2017). Good and bad design in software: metrics and refactoring rules. In 2017 IEEE 24th International Conference on Software Analysis, Evolution and Reengineering (SANER) (pp. 1-10). IEEE.
+
+\bibitem{olbrich2010evolution} Olbrich, S., Cruzes, D. S., Basili, V., \& Zazworka, N. (2010). The evolution and impact of code smells: A case study of two open source systems. In 2009 3rd International Symposium on Empirical Software Engineering and Measurement (ESEM) (pp. 390-400). IEEE.
+
+\bibitem{yamashita2013does} Yamashita, A., \& Moonen, L. (2013). Does code smell awareness actually work? In 2013 20th Working Conference on Reverse Engineering (WCRE) (pp. 66-75). IEEE.
+
+\bibitem{steidl2014quality} Steidl, D., \& Hummel, B. (2014). Quality analysis of source code comments. In 2014 IEEE 14th International Working Conference on Source Code Analysis and Manipulation (SCAM) (pp. 83-92). IEEE.
+
+\bibitem{chatzigeorgiou2016investigating} Chatzigeorgiou, A., \& Manakos, A. (2016). Investigating the evolution of code smells in object-oriented systems. Innovations in Systems and Software Engineering, 12(1), 65-77.
+\end{thebibliography}
+
+\end{document}
+\endinput
+%%
+%% End of file `code-smell-detector.tex'
