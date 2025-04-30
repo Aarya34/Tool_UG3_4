@@ -56,7 +56,7 @@ def extract_code_from_response(response_text):
     Extracts the first code block from the LLM response.
     Assumes code is enclosed in triple backticks.
     """
-    code_blocks = re.findall(r"(?:\w*\n)?(.*?)", response_text, re.DOTALL)
+    code_blocks = re.findall(r"```(?:\w*\n)?(.*?)```", response_text, re.DOTALL)
     if code_blocks:
         return code_blocks[0].strip()
     return response_text.strip()
@@ -99,5 +99,5 @@ def refactor_code_llm():
         print(f"Error: {traceback.format_exc()}")
         return jsonify({"error": str(e)}), 500
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     app.run(port=5000, debug=True, host='0.0.0.0')

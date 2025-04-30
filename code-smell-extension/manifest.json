@@ -5,6 +5,11 @@
   "description": "Shows code smells next to GitHub files",
   "permissions": ["scripting", "activeTab"],
   "host_permissions": ["https://github.com/*"],
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
   "action": {
     "default_title": "Analyze Code Smells",
     "default_icon": "icon.png"
